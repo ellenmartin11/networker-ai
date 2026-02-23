@@ -20,6 +20,9 @@ export function AddContactDialog({ onContactAdded }: AddContactDialogProps) {
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [schoolsStr, setSchoolsStr] = useState("");
+  const [companiesStr, setCompaniesStr] = useState("");
+  const [tagsStr, setTagsStr] = useState("");
   const [parsing, setParsing] = useState(false);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -52,6 +55,15 @@ export function AddContactDialog({ onContactAdded }: AddContactDialogProps) {
       return;
     }
     setSaving(true);
+
+    // Parse comma separated strings into arrays, trimming whitespace
+    const schools = schoolsStr ? schoolsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const extraCompanies = companiesStr ? companiesStr.split(',').map(c => c.trim()).filter(Boolean) : [];
+    const skills = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+    // If they typed a primary company, ensure it's in the arrays list too
+    const finalCompanies = Array.from(new Set([...(company ? [company] : []), ...extraCompanies]));
+
     try {
       const { error } = await supabase.from("contacts").insert({
         name,
@@ -60,12 +72,14 @@ export function AddContactDialog({ onContactAdded }: AddContactDialogProps) {
         location,
         bio,
         linkedin_url: linkedinUrl || null,
-        companies: company ? [company] : [],
+        companies: finalCompanies,
+        schools: schools,
+        skills: skills,
       });
       if (error) throw error;
       toast({ title: "Contact added!" });
       setOpen(false);
-      setBio(""); setName(""); setHeadline(""); setCompany(""); setLocation(""); setLinkedinUrl("");
+      setBio(""); setName(""); setHeadline(""); setCompany(""); setLocation(""); setLinkedinUrl(""); setSchoolsStr(""); setCompaniesStr(""); setTagsStr("");
       onContactAdded();
     } catch (e) {
       console.error(e);
@@ -123,6 +137,18 @@ export function AddContactDialog({ onContactAdded }: AddContactDialogProps) {
             <div>
               <Label>Location</Label>
               <Input value={location} onChange={(e) => setLocation(e.target.value)} className="mt-1 bg-muted border-border" />
+            </div>
+            <div>
+              <Label>Schools (Comma separated)</Label>
+              <Input value={schoolsStr} onChange={(e) => setSchoolsStr(e.target.value)} placeholder="e.g. Yale, MIT" className="mt-1 bg-muted border-border" />
+            </div>
+            <div>
+              <Label>Past Companies (Comma separated)</Label>
+              <Input value={companiesStr} onChange={(e) => setCompaniesStr(e.target.value)} placeholder="e.g. Google, OpenAI" className="mt-1 bg-muted border-border" />
+            </div>
+            <div className="col-span-2">
+              <Label>Interests / Tags (Comma separated)</Label>
+              <Input value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="e.g. neuroscience, research, psychology" className="mt-1 bg-muted border-border" />
             </div>
           </div>
           <div>

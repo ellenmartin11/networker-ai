@@ -73,7 +73,7 @@ export function NetworkTab() {
       ) : (
         <div className="space-y-2">
           {filtered.map((c) => (
-            <ContactCard key={c.id} {...c} onDeleted={fetchContacts} />
+            <ContactCard key={c.id} {...c} onChanged={fetchContacts} />
           ))}
         </div>
       )}

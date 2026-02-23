@@ -14,6 +14,8 @@ export interface Lead {
   headline?: string;
   company?: string;
   match_score: number;
+  match_reason: "Education" | "Industry" | "Role" | "Skills" | "Other";
+  match_reason_details: string;
   suggested_intro: string;
 }
 
@@ -22,6 +24,9 @@ export function LeadsTab() {
   const [loading, setLoading] = useState(false);
   const [topN, setTopN] = useState(5);
   const [userName, setUserName] = useState("");
+  const [userLocation, setUserLocation] = useState("");
+  const [userAffiliations, setUserAffiliations] = useState("");
+  const [userTags, setUserTags] = useState("");
   const [userBio, setUserBio] = useState("");
   const [profileId, setProfileId] = useState<string | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -34,7 +39,7 @@ export function LeadsTab() {
       try {
         const { data, error } = await supabase
           .from("contacts")
-          .select("id, name, bio")
+          .select("id, name, bio, location, headline, skills")
           .eq("priority", -1)
           .limit(1)
           .single();
@@ -42,6 +47,9 @@ export function LeadsTab() {
         if (data && !error) {
           setProfileId(data.id);
           setUserName(data.name || "");
+          setUserLocation(data.location || "");
+          setUserAffiliations(data.headline || "");
+          setUserTags(data.skills?.join(", ") || "");
           setUserBio(data.bio || "");
         }
       } catch (err) {
@@ -54,16 +62,18 @@ export function LeadsTab() {
   const saveProfile = async () => {
     setSavingProfile(true);
     try {
+      const skillsArray = userTags ? userTags.split(',').map(s => s.trim()).filter(Boolean) : [];
+
       if (profileId) {
         const { error } = await supabase
           .from("contacts")
-          .update({ name: userName, bio: userBio })
+          .update({ name: userName, bio: userBio, location: userLocation, headline: userAffiliations, skills: skillsArray })
           .eq("id", profileId);
         if (error) throw error;
       } else {
         const { data, error } = await supabase
           .from("contacts")
-          .insert({ name: userName, bio: userBio, priority: -1 })
+          .insert({ name: userName, bio: userBio, location: userLocation, headline: userAffiliations, priority: -1, skills: skillsArray })
           .select("id")
           .single();
         if (error) throw error;
@@ -83,7 +93,7 @@ export function LeadsTab() {
     setLoading(true);
     try {
       const res = await supabase.functions.invoke("ai-matchmaker", {
-        body: { top_n: topN, user_bio: userBio },
+        body: { top_n: topN, user_bio: userBio, user_location: userLocation, user_affiliations: userAffiliations, user_tags: userTags },
       });
       if (res.error) throw res.error;
       setLeads(res.data?.leads || []);
@@ -101,12 +111,41 @@ export function LeadsTab() {
   return (
     <div className="space-y-5">
       <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label className="text-sm font-medium">Your Name</Label>
+            <Input
+              placeholder="e.g. Jane Doe"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="mt-1.5 bg-muted border-border"
+            />
+          </div>
+          <div>
+            <Label className="text-sm font-medium">Your Location</Label>
+            <Input
+              placeholder="e.g. San Francisco, CA"
+              value={userLocation}
+              onChange={(e) => setUserLocation(e.target.value)}
+              className="mt-1.5 bg-muted border-border"
+            />
+          </div>
+        </div>
         <div>
-          <Label className="text-sm font-medium">Your Name</Label>
+          <Label className="text-sm font-medium">Your Affiliations (Schools, Companies)</Label>
           <Input
-            placeholder="e.g. Jane Doe"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            placeholder="e.g. Yale, OpenAI, Boston Children's Hospital"
+            value={userAffiliations}
+            onChange={(e) => setUserAffiliations(e.target.value)}
+            className="mt-1.5 bg-muted border-border"
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Your Interests / Tags (Comma separated)</Label>
+          <Input
+            placeholder="e.g. neuroscience, research, psychology, startups"
+            value={userTags}
+            onChange={(e) => setUserTags(e.target.value)}
             className="mt-1.5 bg-muted border-border"
           />
         </div>

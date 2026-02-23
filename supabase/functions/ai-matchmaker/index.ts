@@ -49,7 +49,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { top_n = 5, user_bio = "" } = await req.json();
+    const { top_n = 5, user_bio = "", user_location = "", user_affiliations = "", user_tags = "" } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -102,13 +102,24 @@ serve(async (req) => {
 
     // Build prompt for Gemini
     const contactSummaries = contacts
-      .map((c) => `- ${c.name}: ${c.headline || "No headline"}. Company: ${c.company || "Unknown"}. Bio: ${(c.bio || "").slice(0, 200)}`)
+      .map((c) => {
+        let text = `- ${c.name}: ${c.headline || "No headline"}. Current Company: ${c.company || "Unknown"}. Bio: ${(c.bio || "").slice(0, 200)}`;
+        if (c.schools?.length) text += ` Schools/Education: ${c.schools.join(", ")}.`;
+        if (c.companies?.length) text += ` Past/Present Companies: ${c.companies.join(", ")}.`;
+        if (c.skills?.length) text += ` Interests/Tags: ${c.skills.join(", ")}.`;
+        return text;
+      })
       .join("\n");
 
-    const prompt = `You are a professional networking AI. Analyze these contacts and rank them by networking potential, specifically matching them against the user's bio/interests if provided.
+    const prompt = `You are a professional networking AI. Analyze these contacts and rank them by networking potential, specifically matching them against the user's bio/interests, location, and specific affiliations if provided.
 
-User's Bio / Profile:
-${user_bio ? user_bio : "No specific bio provided by the user. Rank generally."}
+CRITICAL INSTRUCTION: If the user has provided specific Affiliations (Schools, Companies, Organizations), you MUST heavily scrutinize the contacts list for these exact or highly similar names. Contacts sharing these affiliations must be heavily prioritized and their match_score significantly boosted (85-100 range).
+
+User's Details:
+Location: ${user_location ? user_location : "Not provided"}
+Affiliations (Schools, Companies): ${user_affiliations ? user_affiliations : "Not provided"}
+Interests / Tags: ${user_tags ? user_tags : "Not provided"}
+Bio / Profile: ${user_bio ? user_bio : "No specific bio provided. Rank generally."}
 
 Contacts in network:
 ${contactSummaries}
@@ -118,10 +129,18 @@ Return a JSON array of the top ${top_n} leads. Each object must have:
 - "name": string (exact name from list)
 - "headline": string (their headline)
 - "company": string (their company)
-- "match_score": number (0-100, how valuable this connection is for the user based on their specific bio/interests and shared connections)
+- "match_score": number (0-100, how valuable this connection is for the user based on their specific bio/interests, location, and shared connections)
+- "match_reason": string (Must be exactly one of: "Education", "Industry", "Role", "Skills", "Company", "Location", or "Other")
+- "match_reason_details": string (1-2 short sentences explaining the specific overlap or reason for the match)
 - "suggested_intro": string (2-3 sentence personalized intro message explaining why they are a good match for the user)
 
-Rank by: relevance to user's bio, shared connections, complementary skills, industry relevance, seniority.
+CRITICAL RANKING HIERARCHY - YOU MUST FOLLOW THIS EXACT ORDER OF IMPORTANCE:
+1. SHARED AFFILIATIONS: If a contact shares specific Schools or Companies listed in the User's "Affiliations", they MUST trigger a match_score > 90 and be placed at the very top of the list.
+2. USER TAGS / INTERESTS: Heavily scrutinize contacts whose "Interests/Tags" or bio keywords align exactly with the User's explicitly listed "Interests / Tags". Note that finding these specific tag keywords in their bio heavily overrides the general "quality" of their bio.
+3. SHARED GRAPH CONNECTIONS: Contacts with shared connections in the Neo4j context.
+4. BIO/INDUSTRY RELEVANCE: General overlap in skills or job roles.
+5. SENIORITY/INDUSTRY LEADERS (Lowest Priority): ONLY prioritize high-level industry leaders if there are absolutely no direct matches in the above categories.
+
 Return ONLY the JSON array, no other text.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

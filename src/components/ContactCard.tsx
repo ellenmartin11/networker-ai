@@ -3,6 +3,7 @@ import { Building2, MapPin, ExternalLink, Trash2, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { EditContactDialog } from "./EditContactDialog";
 
 interface ContactCardProps {
   id: string;
@@ -12,10 +13,10 @@ interface ContactCardProps {
   location?: string | null;
   linkedin_url?: string | null;
   created_at: string;
-  onDeleted?: () => void;
+  onChanged?: () => void;
 }
 
-export function ContactCard({ id, name, headline, company, location, linkedin_url, onDeleted }: ContactCardProps) {
+export function ContactCard({ id, name, headline, company, location, linkedin_url, onChanged }: ContactCardProps) {
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
@@ -25,7 +26,7 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
       const { error } = await supabase.from("contacts").delete().eq("id", id);
       if (error) throw error;
       toast({ title: "Contact deleted" });
-      onDeleted?.();
+      onChanged?.();
     } catch (e) {
       console.error(e);
       toast({ title: "Failed to delete contact", variant: "destructive" });
@@ -70,9 +71,12 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
             )}
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={handleDelete} disabled={deleting} className="text-muted-foreground hover:text-destructive flex-shrink-0">
-          {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-        </Button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <EditContactDialog contactId={id} onContactUpdated={() => onChanged?.()} />
+          <Button variant="ghost" size="icon" onClick={handleDelete} disabled={deleting} className="text-muted-foreground hover:text-destructive flex-shrink-0">
+            {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
     </div>
   );
