@@ -1,1 +1,7 @@
 project_id = "tthyqksbvuwflwyzdqpe"
+
+[functions.parse-bio]
+verify_jwt = false
+
+[functions.ai-matchmaker]
+verify_jwt = false
