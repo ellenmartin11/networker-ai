@@ -111,9 +111,9 @@ serve(async (req) => {
       })
       .join("\n");
 
-    const prompt = `You are a professional networking AI. Analyze these contacts and rank them by networking potential, specifically matching them against the user's bio/interests, location, and specific affiliations if provided.
+    const prompt = `You are a strict, rules-based networking AI. Analyze these contacts and rank them by networking potential, specifically matching them against the user's explicit affiliations and interests.
 
-CRITICAL INSTRUCTION: If the user has provided specific Affiliations (Schools, Companies, Organizations), you MUST heavily scrutinize the contacts list for these exact or highly similar names. Contacts sharing these affiliations must be heavily prioritized and their match_score significantly boosted (85-100 range).
+CRITICAL INSTRUCTION: You MUST heavily penalize general bio "relevance". You MUST heavily reward exact matches in "Affiliations" or "Interests/Tags".
 
 User's Details:
 Location: ${user_location ? user_location : "Not provided"}
@@ -134,12 +134,13 @@ Return a JSON array of the top ${top_n} leads. Each object must have:
 - "match_reason_details": string (1-2 short sentences explaining the specific overlap or reason for the match)
 - "suggested_intro": string (2-3 sentence personalized intro message explaining why they are a good match for the user)
 
-CRITICAL RANKING HIERARCHY - YOU MUST FOLLOW THIS EXACT ORDER OF IMPORTANCE:
-1. SHARED AFFILIATIONS: If a contact shares specific Schools or Companies listed in the User's "Affiliations", they MUST trigger a match_score > 90 and be placed at the very top of the list.
-2. USER TAGS / INTERESTS: Heavily scrutinize contacts whose "Interests/Tags" or bio keywords align exactly with the User's explicitly listed "Interests / Tags". Note that finding these specific tag keywords in their bio heavily overrides the general "quality" of their bio.
-3. SHARED GRAPH CONNECTIONS: Contacts with shared connections in the Neo4j context.
-4. BIO/INDUSTRY RELEVANCE: General overlap in skills or job roles.
-5. SENIORITY/INDUSTRY LEADERS (Lowest Priority): ONLY prioritize high-level industry leaders if there are absolutely no direct matches in the above categories.
+CRITICAL RANKING HIERARCHY - IGNORING THIS IS A FAILURE:
+1. SHARED AFFILIATIONS (Score 90-100): If a contact's "Schools/Education" or "Past/Present Companies" contains any word found in the User's "Affiliations", they MUST be ranked #1.
+2. USER TAGS / INTERESTS (Score 85-95): If a contact's "Interests/Tags" or bio contains any word found in the User's "Interests / Tags", they MUST be ranked immediately below Shared Affiliations.
+3. SHARED GRAPH CONNECTIONS (Score 75-85): Contacts with shared connections in the Neo4j context.
+4. BIO/INDUSTRY RELEVANCE (Score 50-75): General overlap in skills or job roles. Only use this if the above categories yield zero results!
+
+DO NOT rank someone high just because they have a "strong" or "long" bio. If a contact has a 2-word bio but matches a User Tag, they beat a contact with a 100-word irrelevant bio.
 
 Return ONLY the JSON array, no other text.`;
 
