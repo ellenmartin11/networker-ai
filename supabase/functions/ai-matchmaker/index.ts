@@ -49,7 +49,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { top_n = 5 } = await req.json();
+    const { top_n = 5, user_bio = "" } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -63,6 +63,7 @@ serve(async (req) => {
     const { data: contacts, error: dbErr } = await supabase
       .from("contacts")
       .select("*")
+      .neq("priority", -1)
       .order("created_at", { ascending: false });
 
     if (dbErr) throw dbErr;
@@ -104,9 +105,12 @@ serve(async (req) => {
       .map((c) => `- ${c.name}: ${c.headline || "No headline"}. Company: ${c.company || "Unknown"}. Bio: ${(c.bio || "").slice(0, 200)}`)
       .join("\n");
 
-    const prompt = `You are a professional networking AI. Analyze these contacts and rank them by networking potential.
+    const prompt = `You are a professional networking AI. Analyze these contacts and rank them by networking potential, specifically matching them against the user's bio/interests if provided.
 
-Contacts:
+User's Bio / Profile:
+${user_bio ? user_bio : "No specific bio provided by the user. Rank generally."}
+
+Contacts in network:
 ${contactSummaries}
 ${neo4jContext}
 
@@ -114,10 +118,10 @@ Return a JSON array of the top ${top_n} leads. Each object must have:
 - "name": string (exact name from list)
 - "headline": string (their headline)
 - "company": string (their company)
-- "match_score": number (0-100, how valuable this connection is for networking)
-- "suggested_intro": string (2-3 sentence personalized intro message)
+- "match_score": number (0-100, how valuable this connection is for the user based on their specific bio/interests and shared connections)
+- "suggested_intro": string (2-3 sentence personalized intro message explaining why they are a good match for the user)
 
-Rank by: shared connections, complementary skills, industry relevance, seniority.
+Rank by: relevance to user's bio, shared connections, complementary skills, industry relevance, seniority.
 Return ONLY the JSON array, no other text.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

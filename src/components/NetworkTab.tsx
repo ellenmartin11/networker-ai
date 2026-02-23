@@ -26,6 +26,7 @@ export function NetworkTab() {
     const { data, error } = await supabase
       .from("contacts")
       .select("id, name, headline, company, location, linkedin_url, created_at")
+      .neq("priority", -1)
       .order("created_at", { ascending: false });
     if (!error && data) setContacts(data);
     setLoading(false);
@@ -72,7 +73,7 @@ export function NetworkTab() {
       ) : (
         <div className="space-y-2">
           {filtered.map((c) => (
-            <ContactCard key={c.id} {...c} />
+            <ContactCard key={c.id} {...c} onDeleted={fetchContacts} />
           ))}
         </div>
       )}
