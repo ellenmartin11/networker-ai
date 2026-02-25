@@ -16,7 +16,7 @@ export interface Lead {
   match_score: number;
   match_reason: "Education" | "Industry" | "Role" | "Skills" | "Other";
   match_reason_details: string;
-  suggested_intro: string;
+  suggested_intro?: string;
 }
 
 export function LeadsTab() {
@@ -213,11 +213,27 @@ export function LeadsTab() {
         view === "list" ? (
           <div className="grid gap-4 md:grid-cols-2">
             {leads.map((lead, i) => (
-              <LeadCard key={i} {...lead} index={i} />
+              <LeadCard
+                key={i}
+                {...lead}
+                index={i}
+                userName={userName}
+                userLocation={userLocation}
+                userAffiliations={userAffiliations}
+                userTags={userTags}
+                userBio={userBio}
+              />
             ))}
           </div>
         ) : (
-          <GraphView leads={leads} userName={userName} />
+          <GraphView
+            leads={leads}
+            userName={userName}
+            userLocation={userLocation}
+            userAffiliations={userAffiliations}
+            userTags={userTags}
+            userBio={userBio}
+          />
         )
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">

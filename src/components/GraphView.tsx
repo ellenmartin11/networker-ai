@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import ForceGraph2D from "react-force-graph-2d";
 import { Lead } from "./LeadsTab";
-import { Sparkles, X, UserCircle2, Building2, ExternalLink } from "lucide-react";
+import { Sparkles, X, Building2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const REASON_COLORS: Record<string, string> = {
     "Education": "#3b82f6", // Blue
@@ -17,15 +18,20 @@ const REASON_COLORS: Record<string, string> = {
 interface GraphViewProps {
     leads: Lead[];
     userName?: string;
+    userLocation?: string;
+    userAffiliations?: string;
+    userTags?: string;
+    userBio?: string;
 }
 
-export function GraphView({ leads, userName }: GraphViewProps) {
+export function GraphView({ leads, userName, userLocation, userAffiliations, userTags, userBio }: GraphViewProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const fgRef = useRef<any>();
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
     const isDark = document.documentElement.className.includes("dark");
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-    const [showIntro, setShowIntro] = useState(false);
+    const [intro, setIntro] = useState("");
+    const [loadingIntro, setLoadingIntro] = useState(false);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -86,16 +92,45 @@ export function GraphView({ leads, userName }: GraphViewProps) {
     const handleNodeClick = (node: any) => {
         if (node.id === "user") {
             setSelectedLead(null);
-            setShowIntro(false);
+            setIntro("");
             return;
         }
         setSelectedLead(node.leadData);
-        setShowIntro(false);
+        setIntro(node.leadData.suggested_intro || "");
 
         // Center camera on clicked node
         if (fgRef.current) {
             fgRef.current.centerAt(node.x, node.y, 1000);
             fgRef.current.zoom(1.5, 1000);
+        }
+    };
+
+    const generateIntro = async (lead: Lead) => {
+        setLoadingIntro(true);
+        try {
+            const res = await supabase.functions.invoke("generate-greeting", {
+                body: {
+                    user_name: userName || "",
+                    user_location: userLocation || "",
+                    user_affiliations: userAffiliations || "",
+                    user_tags: userTags || "",
+                    user_bio: userBio || "",
+                    lead_name: lead.name,
+                    lead_headline: lead.headline || "",
+                    lead_company: lead.company || "",
+                    match_reason: lead.match_reason,
+                    match_reason_details: lead.match_reason_details
+                }
+            });
+            if (res.error) throw res.error;
+            if (res.data?.error) throw new Error(res.data.error);
+
+            setIntro(res.data?.greeting || "Could not generate greeting.");
+        } catch (e) {
+            console.error(e);
+            setIntro("Failed to generate greeting.");
+        } finally {
+            setLoadingIntro(false);
         }
     };
 
@@ -188,17 +223,22 @@ export function GraphView({ leads, userName }: GraphViewProps) {
                             </p>
                         </div>
 
-                        {!showIntro ? (
-                            <Button onClick={() => setShowIntro(true)} className="w-full gap-2 text-sm h-9" variant="outline">
+                        {!intro && !loadingIntro ? (
+                            <Button onClick={() => generateIntro(selectedLead)} className="w-full gap-2 text-sm h-9" variant="outline">
                                 <Sparkles className="w-4 h-4 text-primary" />
-                                View Personalized Greeting
+                                Generate Personalized Greeting
+                            </Button>
+                        ) : loadingIntro ? (
+                            <Button disabled className="w-full gap-2 text-sm h-9" variant="outline">
+                                <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                                Generating...
                             </Button>
                         ) : (
                             <div className="bg-primary/5 text-primary-foreground border border-primary/20 p-3 rounded-lg animate-fade-in relative">
                                 <h4 className="text-xs font-bold text-primary mb-1.5 flex items-center gap-1.5">
                                     <Sparkles className="w-3.5 h-3.5" /> AI Suggestion
                                 </h4>
-                                <p className="text-sm leading-relaxed text-foreground/90">{selectedLead.suggested_intro}</p>
+                                <p className="text-sm leading-relaxed text-foreground/90">{intro}</p>
                             </div>
                         )}
                     </div>

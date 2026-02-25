@@ -132,7 +132,6 @@ Return a JSON array of the top ${top_n} leads. Each object must have:
 - "match_score": number (0-100, how valuable this connection is for the user based on their specific bio/interests, location, and shared connections)
 - "match_reason": string (Must be exactly one of: "Education", "Industry", "Role", "Skills", "Company", "Location", or "Other")
 - "match_reason_details": string (1-2 short sentences explaining the specific overlap or reason for the match)
-- "suggested_intro": string (2-3 sentence personalized intro message explaining why they are a good match for the user)
 
 CRITICAL RANKING HIERARCHY - IGNORING THIS IS A FAILURE:
 1. SHARED AFFILIATIONS (Score 90-100): If a contact's "Schools/Education" or "Past/Present Companies" contains any word found in the User's "Affiliations", they MUST be ranked #1.

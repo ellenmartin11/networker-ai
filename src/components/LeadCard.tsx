@@ -1,12 +1,22 @@
-import { Building2, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Building2, Sparkles, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface LeadCardProps {
   name: string;
   headline?: string;
   company?: string;
   match_score: number;
-  suggested_intro: string;
+  match_reason: string;
+  match_reason_details: string;
+  suggested_intro?: string;
   index: number;
+  userName: string;
+  userLocation: string;
+  userAffiliations: string;
+  userTags: string;
+  userBio: string;
 }
 
 function ScoreBadge({ score }: { score: number }) {
@@ -18,7 +28,42 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-export function LeadCard({ name, headline, company, match_score, suggested_intro, index }: LeadCardProps) {
+export function LeadCard({
+  name, headline, company, match_score, match_reason, match_reason_details, suggested_intro, index,
+  userName, userLocation, userAffiliations, userTags, userBio
+}: LeadCardProps) {
+  const [intro, setIntro] = useState(suggested_intro || "");
+  const [loadingIntro, setLoadingIntro] = useState(false);
+
+  const generateIntro = async () => {
+    setLoadingIntro(true);
+    try {
+      const res = await supabase.functions.invoke("generate-greeting", {
+        body: {
+          user_name: userName,
+          user_location: userLocation,
+          user_affiliations: userAffiliations,
+          user_tags: userTags,
+          user_bio: userBio,
+          lead_name: name,
+          lead_headline: headline || "",
+          lead_company: company || "",
+          match_reason,
+          match_reason_details
+        }
+      });
+      if (res.error) throw res.error;
+      if (res.data?.error) throw new Error(res.data.error);
+
+      setIntro(res.data?.greeting || "Could not generate greeting.");
+    } catch (e) {
+      console.error(e);
+      setIntro("Failed to generate greeting.");
+    } finally {
+      setLoadingIntro(false);
+    }
+  };
+
   const initials = name
     .split(" ")
     .map((n) => n[0])
@@ -53,7 +98,21 @@ export function LeadCard({ name, headline, company, match_score, suggested_intro
           <Sparkles className="h-3 w-3" />
           Suggested Intro
         </div>
-        <p className="text-sm text-secondary-foreground leading-relaxed">{suggested_intro}</p>
+
+        {intro ? (
+          <p className="text-sm text-secondary-foreground leading-relaxed">{intro}</p>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={generateIntro}
+            disabled={loadingIntro}
+            className="w-full mt-2 gap-2 text-xs h-8"
+          >
+            {loadingIntro ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+            {loadingIntro ? "Generating..." : "Generate Greeting"}
+          </Button>
+        )}
       </div>
     </div>
   );
