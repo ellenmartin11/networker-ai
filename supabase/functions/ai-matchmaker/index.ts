@@ -151,7 +151,7 @@ Return ONLY the JSON array, no other text.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "gemini-2.0-flash",
         messages: [
           { role: "system", content: "You are a professional networking analyst. Return only valid JSON." },
           { role: "user", content: prompt },
