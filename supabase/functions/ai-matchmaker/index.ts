@@ -151,7 +151,7 @@ Return ONLY the JSON array, no other text.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         messages: [
           { role: "system", content: "You are a professional networking analyst. Return only valid JSON." },
           { role: "user", content: prompt },
@@ -162,18 +162,20 @@ Return ONLY the JSON array, no other text.`;
     if (!aiResponse.ok) {
       const status = aiResponse.status;
       if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ error: "Gemini API rate limit exceeded. Please try again later or check your API key quota." }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted" }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ error: "Gemini API credits exhausted. Please check your billing/quota." }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await aiResponse.text();
       console.error("AI error:", status, t);
-      throw new Error("AI gateway error");
+      return new Response(JSON.stringify({ error: `AI Error (Status: ${status}): ${t}` }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const aiData = await aiResponse.json();
@@ -191,7 +193,7 @@ Return ONLY the JSON array, no other text.`;
   } catch (e) {
     console.error("ai-matchmaker error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

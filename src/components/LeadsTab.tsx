@@ -96,13 +96,15 @@ export function LeadsTab() {
         body: { top_n: topN, user_bio: userBio, user_location: userLocation, user_affiliations: userAffiliations, user_tags: userTags },
       });
       if (res.error) throw res.error;
+      if (res.data?.error) throw new Error(res.data.error);
+
       setLeads(res.data?.leads || []);
       if (!res.data?.leads?.length) {
         toast({ title: "No leads found", description: "Add more contacts or check your Neo4j data." });
       }
     } catch (e) {
       console.error(e);
-      toast({ title: "Failed to fetch leads", description: "Check edge function logs.", variant: "destructive" });
+      toast({ title: "Failed to fetch leads", description: e instanceof Error ? e.message : "Check edge function logs.", variant: "destructive" });
     } finally {
       setLoading(false);
     }

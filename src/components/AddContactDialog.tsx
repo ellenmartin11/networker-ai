@@ -36,6 +36,8 @@ export function AddContactDialog({ onContactAdded }: AddContactDialogProps) {
       });
       if (res.error) throw res.error;
       const data = res.data;
+      if (data.error) throw new Error(data.error);
+
       if (data.name) setName(data.name);
       if (data.headline) setHeadline(data.headline);
       if (data.company) setCompany(data.company);
@@ -43,7 +45,7 @@ export function AddContactDialog({ onContactAdded }: AddContactDialogProps) {
       toast({ title: "Bio parsed!", description: "Fields populated from bio." });
     } catch (e) {
       console.error(e);
-      toast({ title: "Parse failed", description: "Enter details manually.", variant: "destructive" });
+      toast({ title: "Parse failed", description: e instanceof Error ? e.message : "Enter details manually.", variant: "destructive" });
     } finally {
       setParsing(false);
     }
