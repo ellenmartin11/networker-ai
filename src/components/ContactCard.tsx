@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Building2, MapPin, ExternalLink, Trash2, Loader2 } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { EditContactDialog } from "./EditContactDialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ContactCardProps {
   id: string;
@@ -12,11 +13,12 @@ interface ContactCardProps {
   company?: string | null;
   location?: string | null;
   linkedin_url?: string | null;
+  skills?: string[] | null;
   created_at: string;
   onChanged?: () => void;
 }
 
-export function ContactCard({ id, name, headline, company, location, linkedin_url, onChanged }: ContactCardProps) {
+export function ContactCard({ id, name, headline, company, location, linkedin_url, skills, onChanged }: ContactCardProps) {
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
@@ -55,6 +57,18 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
               <a href={linkedin_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
+            )}
+            {(!skills || skills.length === 0) && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertTriangle className="h-4 w-4 text-amber-500 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>This user has missing information. Please add tags/interests to improve AI matching.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
           {headline && <p className="truncate text-sm text-muted-foreground">{headline}</p>}

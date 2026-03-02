@@ -83,9 +83,36 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
 
     useEffect(() => {
         if (fgRef.current) {
+            // Drastically exaggerate the distance based on score differences
             fgRef.current.d3Force("link").distance((link: any) => {
-                return 300 - (link.score / 100) * 200;
+                const score = link.score;
+
+                // If the score is very high (95+), keep them extremely close
+                if (score >= 95) return 40;
+
+                // For everything else, apply a steep exponential curve.
+                // A 90 score will be relatively close, but an 80 will be pushed way out,
+                // and a 60 will be pushed to the edges of the screen.
+                const penalty = Math.pow((100 - score) / 10, 2.5);
+                return 40 + (penalty * 30);
             });
+
+            // Increase baseline repulsion so nodes push away from each other
+            if (fgRef.current.d3Force("charge")) {
+                fgRef.current.d3Force("charge").strength(-500).distanceMax(400);
+            }
+
+            // Add a collision force to prevent nodes from ever overlapping, 
+            // even if they have the exact same match score
+            if (!fgRef.current.d3Force("collide")) {
+                // @ts-ignore - The types for d3-force might not be fully exposed here, but the engine supports it
+                import('d3-force').then(d3 => {
+                    fgRef.current.d3Force("collide", d3.forceCollide().radius(30).iterations(2));
+                }).catch(() => {
+                    // Fallback if d3-force isn't directly importable in this environment
+                    console.log("Could not load d3-force collision");
+                });
+            }
         }
     }, [graphData]);
 
