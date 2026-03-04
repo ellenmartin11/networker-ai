@@ -1,54 +1,41 @@
-# Welcome to your Lovable project
+# Welcome to NetGraph
+
+## Project Description
+
+NetGraph is a web application that helps users build and manage their professional network. It uses AI to analyze user profiles already part of the user's network, and recommends connections based on shared interests, education, industry, and more. Using a network graph, powered by Neo4j, we also allow users to visualize their top connections, to better understand the structure of their network and identify potential opportunities for networking and growth. 
+
+## Why?
+
+While this project is part of a class assignment in Entrepreneurship and Innovation at the University of New Haven, we are also familiar with the frustration that modern-day, online-based professional networking can bring. We have all experienced the challenge of trying to build a professional network, and sometimes don't know where to begin when faced with the hundreds of connections on networking platforms. 
+
+We built NetGraph to help you uncover the hidden potential in your existing network, full of people you may have connected with in the past, but may not have had the chance to follow up with. Using AI-powered recommendations, we help you identify the most relevant connections to pursue, and provide you with a great starting point to begin conversations. 
+
+At networker-ai, we believe that networking shouldn't make you feel more frustrated, and it shouldn't feel like a fool's errand. We're here to enhance your networking experience, not replace it. 
+
+## Production Stage
+We are currently in the development and ideation stage of this project. Our MVP is currently under construction and is expected to be completed by the end of March! 
+
+Current Features:
+- Single user
+- Manual entry of profile information
+- CSV upload (from LinkedIn Archives) supported (up to 50 contacts for free tier)
+- AI-powered connection recommendations
+- Network visualization with Neo4j
+- Toggle between type of connections (e.g., by industry, education, location). 
+- AI-generated icebreakers for connections (we recommend tailoring these before sending!)
+
+Future Features:
+- Browser extension to save LinkedIn profiles and connections directly to our platform
+- Connections-of-Connections viewer to expand networks
+- Better integration with existing CRM tools and networking platforms (Bluesky, LinkedIn, etc.)
+- Event sponsorship and event-based connection recommendations
+- Multi-user support!
+- Potentially connections from within networker-ai itself!
+
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**URL**: [networker-ai](www.networker-ai.co)
 
 ## What technologies are used for this project?
 
@@ -59,15 +46,9 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase
+- Antigravity
+- Lovable
+- Neo4j
+- Google AI Studio
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

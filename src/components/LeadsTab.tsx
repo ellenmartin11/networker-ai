@@ -233,14 +233,17 @@ export function LeadsTab() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Label className="text-sm text-muted-foreground whitespace-nowrap">Top</Label>
-            <Input
-              type="number"
-              min={1}
-              max={20}
-              value={topN}
-              onChange={(e) => setTopN(Number(e.target.value))}
-              className="w-16 bg-muted border-border"
-            />
+            <Select value={topN.toString()} onValueChange={(val) => setTopN(Number(val))}>
+              <SelectTrigger className="w-[120px] bg-muted border-border">
+                <SelectValue placeholder="Top..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">Top 5</SelectItem>
+                <SelectItem value="10">Top 10</SelectItem>
+                <SelectItem value="20">Top 20</SelectItem>
+                <SelectItem value="10000">All Contacts</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Select value={matchPreference} onValueChange={setMatchPreference}>
             <SelectTrigger className="w-[180px] bg-muted border-border">

@@ -25,7 +25,12 @@ serve(async (req) => {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not configured");
 
-    const prompt = `You are a professional networking assistant. Write a personalized 2-3 sentence introduction message for a user to send to a potential networking contact.
+    const prompt = `You are an expert at writing authentic, humanized outreach messages. Your goal is to write a highly personalized, casual but professional 2-3 sentence introduction message for a user to send to a potential networking contact. 
+
+Crucially:
+- AVOID generic AI buzzwords (e.g., "I hope this finds you well", "synergy", "delve", "testament").
+- Keep the tone warm, authentic, and concise, as if written by a real person quickly reaching out after noticing a point of shared interest.
+- Focus on the specific Match Reason or Details as the "hook" rather than just listing facts.
 
 User Details:
 Name: ${user_name ? user_name : "Not provided"}
@@ -41,7 +46,7 @@ Company: ${lead_company}
 Match Reason: ${match_reason}
 Match Details: ${match_reason_details}
 
-Write strictly the 2-3 sentence introduction message. Do not include any JSON formatting, internal thoughts, or pleasantries outside of the actual message to send.`;
+Write strictly the 2-3 sentence introduction message. Do not include any JSON formatting, internal thoughts, or pleasantries outside of the actual message.`;
 
     const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",

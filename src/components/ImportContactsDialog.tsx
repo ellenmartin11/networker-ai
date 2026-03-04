@@ -51,7 +51,7 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                     });
 
                     // Format into Supabase inserts
-                    const inserts = dataRows.map((row) => {
+                    const allInserts = dataRows.map((row) => {
                         const getVal = (key: string) => row[headerMap[key]]?.trim() || "";
 
                         const firstName = getVal("First Name");
@@ -81,10 +81,13 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                         };
                     }).filter(Boolean); // remove nulls
 
-                    if (inserts.length === 0) {
+                    if (allInserts.length === 0) {
                         toast({ title: "No contacts found", description: "The CSV appears to be empty.", variant: "destructive" });
                         return;
                     }
+
+                    // Enforce 50 contact limit
+                    const inserts = allInserts.slice(0, 50);
 
                     const { error } = await supabase.from("contacts").insert(inserts);
                     if (error) throw error;
@@ -125,6 +128,12 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                     <div className="text-sm text-muted-foreground space-y-2">
                         <p>Upload a CSV file (e.g., LinkedIn Connections export) to bulk add contacts.</p>
                         <p>Expected columns include: First Name, Last Name, URL, Email Address, Company, Position.</p>
+                        <p className="font-semibold text-primary/80 mt-2">
+                            * Note: On the free tier, we will add only 50 contacts.
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-2 bg-amber-50 dark:bg-amber-950/50 p-2.5 rounded-md border border-amber-200 dark:border-amber-900/50 leading-relaxed">
+                            * Note: Some information will be missing due to LinkedIn's privacy act. The ALERT icon indicates which contacts have missing information. We recommend filling this in to enhance AI functionality, though it is not necessary.
+                        </p>
                     </div>
                     <div className="flex flex-col gap-2">
                         <Label htmlFor="csv-upload" className="sr-only">Upload CSV</Label>

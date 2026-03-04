@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, Sparkles, Loader2 } from "lucide-react";
+import { Building2, Sparkles, Loader2, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -34,6 +34,13 @@ export function LeadCard({
 }: LeadCardProps) {
   const [intro, setIntro] = useState(suggested_intro || "");
   const [loadingIntro, setLoadingIntro] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(intro);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const generateIntro = async () => {
     setLoadingIntro(true);
@@ -94,13 +101,31 @@ export function LeadCard({
         <ScoreBadge score={match_score} />
       </div>
       <div className="mt-4 rounded-lg bg-muted/50 p-3">
-        <div className="flex items-center gap-1.5 text-xs font-medium text-primary mb-1.5">
-          <Sparkles className="h-3 w-3" />
-          Suggested Intro
+        <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
+            <Sparkles className="h-3 w-3" />
+            Suggested Intro
+          </div>
+          {intro && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+              onClick={handleCopy}
+              title="Copy to clipboard"
+            >
+              {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+            </Button>
+          )}
         </div>
 
         {intro ? (
-          <p className="text-sm text-secondary-foreground leading-relaxed">{intro}</p>
+          <div className="space-y-2">
+            <p className="text-sm text-secondary-foreground leading-relaxed">{intro}</p>
+            <p className="text-[10px] text-muted-foreground italic">
+              * We highly recommend further tailoring this greeting before reaching out!
+            </p>
+          </div>
         ) : (
           <Button
             variant="outline"

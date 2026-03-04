@@ -163,7 +163,7 @@ Contacts in network to evaluate in this batch:
 ${contactSummaries}
 ${neo4jContext}
 
-Return a JSON array of the top 10 best leads from THIS specific batch. Each object must have:
+Return a JSON object containing a single key "leads" which is an array of EVERY SINGLE CONTACT from THIS specific batch, fully evaluated and scored. The array MUST contain EXACTLY ${batchContacts.length} items. Each object in the array must have:
 - "name": string (exact name from list)
 - "headline": string (their headline)
 - "company": string (their company)
@@ -174,7 +174,7 @@ ${hierarchyRules}
 
 DO NOT rank someone high just because they have a "strong" or "long" bio. Follow the strict hierarchy rules above!
 
-Return ONLY the JSON array, no other text.`;
+Return ONLY the JSON object, no other text.`;
 
       const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
@@ -185,9 +185,10 @@ Return ONLY the JSON array, no other text.`;
         body: JSON.stringify({
           model: "gemini-2.5-flash",
           messages: [
-            { role: "system", content: "You are a professional networking analyst. Return only valid JSON." },
+            { role: "system", content: "You are a professional networking analyst. Return only valid JSON object." },
             { role: "user", content: prompt },
           ],
+          response_format: { type: "json_object" },
         }),
       });
 
@@ -201,7 +202,14 @@ Return ONLY the JSON array, no other text.`;
       const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (match) jsonStr = match[1].trim();
 
-      return JSON.parse(jsonStr);
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (err) {
+        console.error("Failed to parse JSON:", jsonStr);
+        throw err;
+      }
+      return parsed.leads || [];
     };
 
     // Execute all batches in parallel

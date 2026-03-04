@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Users } from "lucide-react";
+import { Search, Users, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ContactCard } from "./ContactCard";
 import { AddContactDialog } from "./AddContactDialog";
@@ -74,6 +74,16 @@ export function NetworkTab() {
 
   return (
     <div className="space-y-5">
+      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm text-foreground/90 space-y-2">
+        <h3 className="font-semibold text-primary flex items-center gap-1.5">
+          <Sparkles className="h-4 w-4" />
+          How to use networker-ai
+        </h3>
+        <p className="leading-relaxed">
+          You can retrieve all your connections from LinkedIn as a CSV using the data archive tool in LinkedIn, and upload them using the "Import CSV" button below. Alternatively, you can begin manually inserting contacts.
+        </p>
+      </div>
+
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

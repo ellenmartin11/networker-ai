@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import ForceGraph2D from "react-force-graph-2d";
 import { Lead } from "./LeadsTab";
-import { Sparkles, X, Building2, Loader2 } from "lucide-react";
+import { Sparkles, X, Building2, Loader2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,6 +32,13 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [intro, setIntro] = useState("");
     const [loadingIntro, setLoadingIntro] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(intro);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -120,10 +127,12 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
         if (node.id === "user") {
             setSelectedLead(null);
             setIntro("");
+            setCopied(false);
             return;
         }
         setSelectedLead(node.leadData);
         setIntro(node.leadData.suggested_intro || "");
+        setCopied(false);
 
         // Center camera on clicked node
         if (fgRef.current) {
@@ -261,11 +270,25 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                                 Generating...
                             </Button>
                         ) : (
-                            <div className="bg-primary/5 text-primary-foreground border border-primary/20 p-3 rounded-lg animate-fade-in relative">
-                                <h4 className="text-xs font-bold text-primary mb-1.5 flex items-center gap-1.5">
-                                    <Sparkles className="w-3.5 h-3.5" /> AI Suggestion
-                                </h4>
+                            <div className="bg-primary/5 text-primary-foreground border border-primary/20 p-3 rounded-lg animate-fade-in relative space-y-2">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="text-xs font-bold text-primary mb-1.5 flex items-center gap-1.5 mt-1">
+                                        <Sparkles className="w-3.5 h-3.5" /> AI Suggestion
+                                    </h4>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 -mr-1 -mt-1 hover:bg-primary/10 text-primary/70 hover:text-primary"
+                                        onClick={handleCopy}
+                                        title="Copy to clipboard"
+                                    >
+                                        {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                                    </Button>
+                                </div>
                                 <p className="text-sm leading-relaxed text-foreground/90">{intro}</p>
+                                <p className="text-[10px] text-muted-foreground italic">
+                                    * We highly recommend further tailoring this greeting before reaching out!
+                                </p>
                             </div>
                         )}
                     </div>
