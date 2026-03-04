@@ -45,15 +45,13 @@ export function NetworkTab() {
 
   useEffect(() => { fetchContacts(); }, []);
 
-  let sortedAndFiltered = contacts.filter((c) =>
+  const sortedAndFiltered = contacts.filter((c) =>
     [c.name, c.headline, c.company, c.location, ...(c.schools || [])]
       .filter(Boolean)
       .join(" ")
       .toLowerCase()
       .includes(search.toLowerCase())
-  );
-
-  sortedAndFiltered.sort((a, b) => {
+  ).sort((a, b) => {
     switch (sortBy) {
       case "name":
         return a.name.localeCompare(b.name);

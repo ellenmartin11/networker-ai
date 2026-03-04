@@ -1,14 +1,16 @@
-# Welcome to NetGraph
+# Welcome to networker-ai
+
+Check out the demo at https://networker-ai.co !
 
 ## Project Description
 
-NetGraph is a web application that helps users build and manage their professional network. It uses AI to analyze user profiles already part of the user's network, and recommends connections based on shared interests, education, industry, and more. Using a network graph, powered by Neo4j, we also allow users to visualize their top connections, to better understand the structure of their network and identify potential opportunities for networking and growth. 
+networker-ai is a web application that helps users build and manage their professional network. It uses AI to analyze user profiles already part of the user's network, and recommends connections based on shared interests, education, industry, and more. Using a network graph, powered by Neo4j, we also allow users to visualize their top connections, to better understand the structure of their network and identify potential opportunities for networking and growth. 
 
 ## Why?
 
 While this project is part of a class assignment in Entrepreneurship and Innovation at the University of New Haven, we are also familiar with the frustration that modern-day, online-based professional networking can bring. We have all experienced the challenge of trying to build a professional network, and sometimes don't know where to begin when faced with the hundreds of connections on networking platforms. 
 
-We built NetGraph to help you uncover the hidden potential in your existing network, full of people you may have connected with in the past, but may not have had the chance to follow up with. Using AI-powered recommendations, we help you identify the most relevant connections to pursue, and provide you with a great starting point to begin conversations. 
+We built networker-ai to help you uncover the hidden potential in your existing network, full of people you may have connected with in the past, but may not have had the chance to follow up with. Using AI-powered recommendations, we help you identify the most relevant connections to pursue, and provide you with a great starting point to begin conversations. 
 
 At networker-ai, we believe that networking shouldn't make you feel more frustrated, and it shouldn't feel like a fool's errand. We're here to enhance your networking experience, not replace it. 
 

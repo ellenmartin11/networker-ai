@@ -115,7 +115,7 @@ serve(async (req) => {
     }
 
     // Helper to evaluate a batch
-    const evaluateBatch = async (batchContacts: any[]) => {
+    const evaluateBatch = async (batchContacts: { name: string, headline?: string, company?: string, bio?: string, schools?: string[], companies?: string[], skills?: string[] }[]) => {
       const contactSummaries = batchContacts
         .map((c) => {
           let text = `- ${c.name}: ${c.headline || "No headline"}. Current Company: ${c.company || "Unknown"}. Bio: ${(c.bio || "").slice(0, 200)}`;
@@ -217,7 +217,7 @@ Return ONLY the JSON object, no other text.`;
 
     // Flatten, filter, deduplicate, and sort the combined results
     const combinedLeads = allResults.flat();
-    const sortedLeads = combinedLeads.sort((a: any, b: any) => b.match_score - a.match_score);
+    const sortedLeads = combinedLeads.sort((a: { match_score: number }, b: { match_score: number }) => b.match_score - a.match_score);
 
     // Take top N overall
     const finalLeads = sortedLeads.slice(0, top_n);

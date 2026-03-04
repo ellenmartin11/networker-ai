@@ -26,7 +26,7 @@ interface GraphViewProps {
 
 export function GraphView({ leads, userName, userLocation, userAffiliations, userTags, userBio }: GraphViewProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const fgRef = useRef<any>();
+    const fgRef = useRef<Record<string, (...args: unknown[]) => unknown> | null>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
     const isDark = document.documentElement.className.includes("dark");
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -86,12 +86,12 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
         }));
 
         return { nodes, links };
-    }, [leads]);
+    }, [leads, isDark, userName]);
 
     useEffect(() => {
         if (fgRef.current) {
             // Drastically exaggerate the distance based on score differences
-            fgRef.current.d3Force("link").distance((link: any) => {
+            (fgRef.current.d3Force as (...args: unknown[]) => unknown)("link").distance((link: { score: number }) => {
                 const score = link.score;
 
                 // If the score is very high (95+), keep them extremely close
@@ -105,16 +105,15 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
             });
 
             // Increase baseline repulsion so nodes push away from each other
-            if (fgRef.current.d3Force("charge")) {
-                fgRef.current.d3Force("charge").strength(-500).distanceMax(400);
+            if ((fgRef.current.d3Force as (...args: unknown[]) => unknown)("charge")) {
+                ((fgRef.current.d3Force as (...args: unknown[]) => unknown)("charge") as { strength: (v: number) => { distanceMax: (v: number) => void } }).strength(-500).distanceMax(400);
             }
 
             // Add a collision force to prevent nodes from ever overlapping, 
             // even if they have the exact same match score
-            if (!fgRef.current.d3Force("collide")) {
-                // @ts-ignore - The types for d3-force might not be fully exposed here, but the engine supports it
+            if (!(fgRef.current.d3Force as (...args: unknown[]) => unknown)("collide")) {
                 import('d3-force').then(d3 => {
-                    fgRef.current.d3Force("collide", d3.forceCollide().radius(30).iterations(2));
+                    (fgRef.current.d3Force as (...args: unknown[]) => unknown)("collide", d3.forceCollide().radius(30).iterations(2));
                 }).catch(() => {
                     // Fallback if d3-force isn't directly importable in this environment
                     console.log("Could not load d3-force collision");
@@ -123,7 +122,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
         }
     }, [graphData]);
 
-    const handleNodeClick = (node: any) => {
+    const handleNodeClick = (node: { id: string, leadData: Lead, x: number, y: number }) => {
         if (node.id === "user") {
             setSelectedLead(null);
             setIntro("");
@@ -136,8 +135,8 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
 
         // Center camera on clicked node
         if (fgRef.current) {
-            fgRef.current.centerAt(node.x, node.y, 1000);
-            fgRef.current.zoom(1.5, 1000);
+            (fgRef.current.centerAt as (x: number, y: number, ms: number) => void)(node.x, node.y, 1000);
+            (fgRef.current.zoom as (zoom: number, ms: number) => void)(1.5, 1000);
         }
     };
 
@@ -196,7 +195,8 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                 width={dimensions.width}
                 height={dimensions.height}
                 graphData={graphData}
-                nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+                nodeCanvasObject={(node: { x?: number, y?: number, val?: number, color?: string, name?: string }, ctx: CanvasRenderingContext2D, globalScale: number) => {
+                    if (node.x === undefined || node.y === undefined || node.val === undefined || node.color === undefined) return;
                     // Draw Node Circle
                     ctx.beginPath();
                     ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
@@ -204,7 +204,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                     ctx.fill();
 
                     // Draw Text Label
-                    const label = node.name;
+                    const label = node.name || "";
                     const fontSize = 12 / globalScale;
                     ctx.font = `${fontSize}px Sans-Serif`;
                     ctx.textAlign = 'center';
@@ -213,14 +213,14 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                     // Position text slightly below the node
                     ctx.fillText(label, node.x, node.y + (node.val / 2) + fontSize + 2);
                 }}
-                nodeColor={(node: any) => node.color}
-                onNodeClick={handleNodeClick}
+                nodeColor={(node: { color?: string }) => node.color || ""}
+                onNodeClick={handleNodeClick as (node: { id: string, leadData: Lead, x: number, y: number }) => void}
                 nodeRelSize={1}
-                nodeVal={(node: any) => node.val}
+                nodeVal={(node: { val?: number }) => node.val || 1}
                 linkColor={() => (isDark ? "#333" : "#ddd")}
-                linkWidth={(link: any) => Math.max(1, (link.score / 100) * 8)}
+                linkWidth={(link: { score?: number }) => Math.max(1, ((link.score || 0) / 100) * 8)}
                 linkDirectionalParticles={2}
-                linkDirectionalParticleSpeed={(d: any) => (d.score / 100) * 0.01}
+                linkDirectionalParticleSpeed={(d: { score?: number }) => ((d.score || 0) / 100) * 0.01}
                 backgroundColor={isDark ? "hsl(var(--card))" : "#ffffff"}
             />
 
