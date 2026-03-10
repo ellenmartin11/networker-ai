@@ -42,7 +42,7 @@ export function HomeTab() {
                                 <div className="flex items-center gap-2 mb-1">
                                     <h4 className="font-medium text-foreground">Ellen Martin</h4>
                                     <div className="flex items-center gap-1.5">
-                                        <a href="https://linkedin.com/in/ellen-martin" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0A66C2] transition-colors" title="LinkedIn">
+                                        <a href="https://www.linkedin.com/in/martinellenjane/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0A66C2] transition-colors" title="LinkedIn">
                                             <Linkedin className="h-4 w-4" />
                                         </a>
                                         <a href="https://github.com/ellenmartin11" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" title="GitHub">
@@ -61,7 +61,7 @@ export function HomeTab() {
                                 <div className="flex items-center gap-2 mb-1">
                                     <h4 className="font-medium text-foreground">Shruthi Darwaja</h4>
                                     <div className="flex items-center gap-1.5">
-                                        <a href="https://linkedin.com/in/shruthi-darwaja" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0A66C2] transition-colors" title="LinkedIn">
+                                        <a href="https://www.linkedin.com/in/darwaja-shruthi/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0A66C2] transition-colors" title="LinkedIn">
                                             <Linkedin className="h-4 w-4" />
                                         </a>
                                         <a href="https://github.com/shruthidarwaja" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" title="GitHub">
