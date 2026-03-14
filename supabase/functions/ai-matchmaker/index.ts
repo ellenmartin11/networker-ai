@@ -108,7 +108,7 @@ serve(async (req) => {
     }
 
     // Batch contacts to avoid massive single prompts
-    const BATCH_SIZE = 40;
+    const BATCH_SIZE = 15;
     const batches = [];
     for (let i = 0; i < contacts.length; i += BATCH_SIZE) {
       batches.push(contacts.slice(i, i + BATCH_SIZE));
@@ -184,8 +184,9 @@ Return ONLY the JSON object, no other text.`;
         },
         body: JSON.stringify({
           model: "gemini-2.5-flash",
+          max_tokens: 8192,
           messages: [
-            { role: "system", content: "You are a professional networking analyst. Return only valid JSON object." },
+            { role: "system", content: "You are a professional networking analyst. Return only valid JSON object. Ensure all JSON formatting is strictly correct." },
             { role: "user", content: prompt },
           ],
           response_format: { type: "json_object" },
