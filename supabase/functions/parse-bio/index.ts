@@ -26,7 +26,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a professional bio parser. Extract structured data from LinkedIn bios/summaries. Return ONLY valid JSON with these fields: name, headline, company, location, skills (array), schools (array), companies (array). If a field can't be determined, use null. Do not include any text outside the JSON.`,
+            content: `You are a professional bio parser. Extract structured data from LinkedIn bios/summaries. Return ONLY a strictly valid JSON object with these fields: name, headline, company, location, skills (array), schools (array), companies (array). If a field can't be determined, use null. ALL keys must be double-quoted. Do not use trailing commas. Do not include any text outside the JSON.`,
           },
           { role: "user", content: bio },
         ],
@@ -59,6 +59,10 @@ serve(async (req) => {
     let jsonStr = content;
     const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (match) jsonStr = match[1].trim();
+
+    // Clean up common JSON mistakes the AI might make (unquoted keys, trailing commas)
+    jsonStr = jsonStr.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+    jsonStr = jsonStr.replace(/,\s*([}\]])/g, '$1');
 
     const parsed = JSON.parse(jsonStr);
 

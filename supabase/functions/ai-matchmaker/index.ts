@@ -186,7 +186,7 @@ Return ONLY the JSON object, no other text.`;
           model: "gemini-2.5-flash",
           max_tokens: 8192,
           messages: [
-            { role: "system", content: "You are a professional networking analyst. Return only valid JSON object. Ensure all JSON formatting is strictly correct." },
+            { role: "system", content: "You are a professional networking analyst. Return only a strictly valid JSON object. ALL JSON keys must be double-quoted and ensuring no trailing commas are used." },
             { role: "user", content: prompt },
           ],
           response_format: { type: "json_object" },
@@ -202,6 +202,10 @@ Return ONLY the JSON object, no other text.`;
       let jsonStr = content;
       const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (match) jsonStr = match[1].trim();
+
+      // Clean up common JSON mistakes the AI might make (unquoted keys, trailing commas)
+      jsonStr = jsonStr.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+      jsonStr = jsonStr.replace(/,\s*([}\]])/g, '$1');
 
       let parsed;
       try {
