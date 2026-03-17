@@ -27,19 +27,19 @@ const LogoIcon = ({ className }: { className?: string }) => (
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-[#e0f2f1] via-[#ebf4fa] to-[#e6e6f0]">
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="border-b border-white/20 bg-white/40 backdrop-blur-xl sticky top-0 z-10">
         <div className="container max-w-4xl py-6">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center text-[#3b82f6]">
+            <div className="flex items-center justify-center text-primary">
               <LogoIcon className="h-10 w-10" />
             </div>
             <div>
-              <h1 className="font-display text-3xl tracking-tight text-[#3b82f6]" style={{ fontWeight: 500 }}>
+              <h1 className="font-display text-3xl tracking-tight text-primary" style={{ fontWeight: 500 }}>
                 networker<span className="font-semibold">-ai</span>
               </h1>
-              <p className="text-sm text-muted-foreground mt-0.5">AI-powered professional network intelligence</p>
+              <p className="text-sm text-foreground/70 mt-0.5">AI-powered professional network intelligence</p>
             </div>
           </div>
         </div>
@@ -48,16 +48,16 @@ const Index = () => {
       {/* Main */}
       <main className="container max-w-4xl py-8">
         <Tabs defaultValue="home">
-          <TabsList className="bg-muted border border-border">
-            <TabsTrigger value="home" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground">
+          <TabsList className="bg-white/40 backdrop-blur-xl border border-white/40 shadow-sm p-1">
+            <TabsTrigger value="home" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all">
               <Home className="h-4 w-4" />
               Home
             </TabsTrigger>
-            <TabsTrigger value="network" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground">
+            <TabsTrigger value="network" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all">
               <Users className="h-4 w-4" />
               My Network
             </TabsTrigger>
-            <TabsTrigger value="leads" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:text-foreground">
+            <TabsTrigger value="leads" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all">
               <Sparkles className="h-4 w-4" />
               NetGraph
             </TabsTrigger>

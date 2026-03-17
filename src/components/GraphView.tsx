@@ -172,10 +172,10 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
     return (
         <div
             ref={containerRef}
-            className="w-full h-[600px] rounded-lg border border-border bg-card overflow-hidden relative"
+            className="w-full h-[600px] rounded-lg border border-white/40 bg-white/60 backdrop-blur-xl shadow-sm overflow-hidden relative"
         >
             {/* Legend */}
-            <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm border border-border p-3 rounded-md shadow-sm z-10">
+            <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-md border border-white/40 p-3 rounded-md shadow-sm z-10">
                 <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wider">Match Reason</h4>
                 <div className="space-y-1.5 shrink-0">
                     {Object.entries(REASON_COLORS).map(([reason, color]) => (
@@ -221,13 +221,13 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                 linkWidth={(link: { score?: number }) => Math.max(1, ((link.score || 0) / 100) * 8)}
                 linkDirectionalParticles={2}
                 linkDirectionalParticleSpeed={(d: { score?: number }) => ((d.score || 0) / 100) * 0.01}
-                backgroundColor={isDark ? "hsl(var(--card))" : "#ffffff"}
+                backgroundColor="transparent"
             />
 
             {/* Floating Selection Card */}
             {selectedLead && (
-                <div className="absolute top-4 right-4 w-80 bg-background/95 backdrop-blur-md border border-border rounded-xl shadow-lg z-10 animate-fade-in flex flex-col max-h-[calc(100%-2rem)] overflow-y-auto">
-                    <div className="p-4 border-b border-border flex justify-between items-start sticky top-0 bg-background/95 z-20">
+                <div className="absolute top-4 right-4 w-80 bg-white/90 backdrop-blur-xl border border-white/50 rounded-xl shadow-lg z-10 animate-fade-in flex flex-col max-h-[calc(100%-2rem)] overflow-y-auto">
+                    <div className="p-4 border-b border-white/30 flex justify-between items-start sticky top-0 bg-white/90 backdrop-blur-xl z-20">
                         <div>
                             <div className="flex items-center gap-2 mb-1">
                                 <h3 className="font-semibold text-lg leading-tight">{selectedLead.name}</h3>
@@ -254,7 +254,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: REASON_COLORS[selectedLead.match_reason] || REASON_COLORS["Other"] }} />
                                 <h4 className="text-xs font-semibold uppercase text-muted-foreground">Match: {selectedLead.match_reason}</h4>
                             </div>
-                            <p className="text-sm text-foreground/90 leading-relaxed bg-muted/40 p-2.5 rounded-md border border-border/50">
+                            <p className="text-sm text-foreground/90 leading-relaxed bg-white/50 p-2.5 rounded-md border border-white/40">
                                 {selectedLead.match_reason_details || "No details provided."}
                             </p>
                         </div>
@@ -265,7 +265,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                                 Generate Personalized Greeting
                             </Button>
                         ) : loadingIntro ? (
-                            <Button disabled className="w-full gap-2 text-sm h-9" variant="outline">
+                            <Button disabled className="w-full gap-2 text-sm h-9 border-white/40 bg-white/50" variant="outline">
                                 <Loader2 className="w-4 h-4 text-primary animate-spin" />
                                 Generating...
                             </Button>

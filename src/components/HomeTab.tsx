@@ -3,7 +3,7 @@ import { Sparkles, Heart, Zap, User, Linkedin, Github } from "lucide-react";
 export function HomeTab() {
     return (
         <div className="space-y-8 animate-fade-in">
-            <section className="bg-card rounded-xl border border-border p-8 shadow-sm text-center space-y-4">
+            <section className="bg-white/60 backdrop-blur-xl rounded-xl border border-white/40 p-8 shadow-sm text-center space-y-4">
                 <div className="mx-auto bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-4">
                     <Sparkles className="h-8 w-8 text-primary" />
                 </div>
@@ -18,7 +18,7 @@ export function HomeTab() {
             </section>
 
             <section className="grid sm:grid-cols-2 gap-6">
-                <div className="bg-card rounded-xl border border-border p-6 shadow-sm space-y-4">
+                <div className="bg-white/60 backdrop-blur-xl rounded-xl border border-white/40 p-6 shadow-sm space-y-4">
                     <div className="flex items-center gap-2 text-xl font-semibold text-foreground">
                         <Heart className="h-5 w-5 text-primary" />
                         <h3>Our MO</h3>
@@ -28,7 +28,7 @@ export function HomeTab() {
                     </p>
                 </div>
 
-                <div className="bg-card rounded-xl border border-border p-6 shadow-sm space-y-6">
+                <div className="bg-white/60 backdrop-blur-xl rounded-xl border border-white/40 p-6 shadow-sm space-y-6">
                     <div className="flex items-center gap-2 text-xl font-semibold text-foreground">
                         <User className="h-5 w-5 text-primary" />
                         <h3>Meet the Creators</h3>

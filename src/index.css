@@ -5,50 +5,50 @@
 @tailwind utilities;
 @layer base {
   :root {
-    --background: 220 20% 7%;
-    --foreground: 210 20% 92%;
+    --background: 160 30% 96%;
+    --foreground: 200 50% 15%;
 
-    --card: 220 18% 10%;
-    --card-foreground: 210 20% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 50% 15%;
 
-    --popover: 220 18% 12%;
-    --popover-foreground: 210 20% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 50% 15%;
 
-    --primary: 38 92% 55%;
-    --primary-foreground: 220 20% 7%;
+    --primary: 175 100% 28%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 16% 16%;
-    --secondary-foreground: 210 20% 80%;
+    --secondary: 160 20% 90%;
+    --secondary-foreground: 200 50% 20%;
 
-    --muted: 220 14% 14%;
-    --muted-foreground: 215 12% 50%;
+    --muted: 160 20% 90%;
+    --muted-foreground: 200 20% 45%;
 
-    --accent: 38 92% 55%;
-    --accent-foreground: 220 20% 7%;
+    --accent: 175 100% 28%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 18%;
-    --input: 220 14% 18%;
-    --ring: 38 92% 55%;
+    --border: 200 20% 85%;
+    --input: 200 20% 85%;
+    --ring: 175 100% 28%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --sidebar-background: 220 18% 10%;
-    --sidebar-foreground: 210 20% 80%;
-    --sidebar-primary: 38 92% 55%;
-    --sidebar-primary-foreground: 220 20% 7%;
-    --sidebar-accent: 220 14% 14%;
-    --sidebar-accent-foreground: 210 20% 80%;
-    --sidebar-border: 220 14% 18%;
-    --sidebar-ring: 38 92% 55%;
+    --sidebar-background: 160 30% 96%;
+    --sidebar-foreground: 200 50% 15%;
+    --sidebar-primary: 175 100% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 20% 90%;
+    --sidebar-accent-foreground: 200 50% 20%;
+    --sidebar-border: 200 20% 85%;
+    --sidebar-ring: 175 100% 28%;
 
-    /* Custom tokens */
-    --gradient-gold: linear-gradient(135deg, hsl(38 92% 55%), hsl(28 90% 48%));
-    --gradient-card: linear-gradient(145deg, hsl(220 18% 12%), hsl(220 18% 9%));
-    --shadow-glow: 0 0 30px -5px hsl(38 92% 55% / 0.15);
-    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.4);
+    /* Custom tokens for light glassy theme */
+    --gradient-gold: linear-gradient(135deg, hsl(175 100% 28%), hsl(160 80% 40%));
+    --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
+    --shadow-glow: 0 0 30px -5px hsl(175 100% 28% / 0.15);
+    --shadow-card: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
 
     --score-high: 142 71% 45%;
     --score-medium: 38 92% 55%;

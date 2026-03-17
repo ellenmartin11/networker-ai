@@ -72,7 +72,7 @@ export function NetworkTab() {
 
   return (
     <div className="space-y-5">
-      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm text-foreground/90 space-y-2">
+      <div className="bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm rounded-lg p-4 text-sm text-foreground/90 space-y-2">
         <h3 className="font-semibold text-primary flex items-center gap-1.5">
           <Sparkles className="h-4 w-4" />
           How to use networker-ai
@@ -89,11 +89,11 @@ export function NetworkTab() {
             placeholder="Search contacts..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-muted border-border"
+            className="pl-9 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
           />
         </div>
         <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-[160px] bg-muted border-border">
+          <SelectTrigger className="w-[160px] bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white">
             <SelectValue placeholder="Sort by..." />
           </SelectTrigger>
           <SelectContent>

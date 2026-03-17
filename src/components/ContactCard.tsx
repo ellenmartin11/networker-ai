@@ -45,7 +45,7 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
     .toUpperCase();
 
   return (
-    <div className="group flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-glow)]">
+    <div className="group flex items-center gap-4 rounded-lg border border-white/40 bg-white/60 backdrop-blur-xl shadow-sm p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-glow)]">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary">
         {initials}
       </div>

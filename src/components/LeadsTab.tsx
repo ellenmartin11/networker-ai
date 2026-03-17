@@ -181,7 +181,7 @@ export function LeadsTab() {
               placeholder="e.g. Jane Doe"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              className="mt-1.5 bg-muted border-border"
+              className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
             />
           </div>
           <div>
@@ -190,7 +190,7 @@ export function LeadsTab() {
               placeholder="e.g. San Francisco, CA"
               value={userLocation}
               onChange={(e) => setUserLocation(e.target.value)}
-              className="mt-1.5 bg-muted border-border"
+              className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
             />
           </div>
         </div>
@@ -200,7 +200,7 @@ export function LeadsTab() {
             placeholder="e.g. Yale, OpenAI, Boston Children's Hospital"
             value={userAffiliations}
             onChange={(e) => setUserAffiliations(e.target.value)}
-            className="mt-1.5 bg-muted border-border"
+            className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
           />
         </div>
         <div>
@@ -209,7 +209,7 @@ export function LeadsTab() {
             placeholder="e.g. neuroscience, research, psychology, startups"
             value={userTags}
             onChange={(e) => setUserTags(e.target.value)}
-            className="mt-1.5 bg-muted border-border"
+            className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
           />
         </div>
         <div>
@@ -218,7 +218,7 @@ export function LeadsTab() {
             placeholder="Paste your LinkedIn bio, current role, or interests here to help AI find the best matches..."
             value={userBio}
             onChange={(e) => setUserBio(e.target.value)}
-            className="mt-1.5 min-h-[100px] resize-y bg-muted/50"
+            className="mt-1.5 min-h-[100px] resize-y bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
           />
         </div>
         <div className="flex justify-end">
@@ -234,7 +234,7 @@ export function LeadsTab() {
           <div className="flex items-center gap-2">
             <Label className="text-sm text-muted-foreground whitespace-nowrap">Top</Label>
             <Select value={topN.toString()} onValueChange={(val) => setTopN(Number(val))}>
-              <SelectTrigger className="w-[120px] bg-muted border-border">
+              <SelectTrigger className="w-[120px] bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white">
                 <SelectValue placeholder="Top..." />
               </SelectTrigger>
               <SelectContent>
@@ -246,7 +246,7 @@ export function LeadsTab() {
             </Select>
           </div>
           <Select value={matchPreference} onValueChange={setMatchPreference}>
-            <SelectTrigger className="w-[180px] bg-muted border-border">
+            <SelectTrigger className="w-[180px] bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white">
               <SelectValue placeholder="Prioritize..." />
             </SelectTrigger>
             <SelectContent>
@@ -262,7 +262,7 @@ export function LeadsTab() {
         </div>
 
         {leads.length > 0 && (
-          <div className="flex items-center gap-1 bg-muted p-1 rounded-md border border-border">
+          <div className="flex items-center gap-1 bg-white/40 backdrop-blur-md p-1 rounded-md border border-white/40 shadow-sm">
             <Button
               variant={view === "list" ? "secondary" : "ghost"}
               size="sm"
