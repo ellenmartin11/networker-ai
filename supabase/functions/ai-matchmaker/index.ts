@@ -203,9 +203,7 @@ Return ONLY the JSON object, no other text.`;
       const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (match) jsonStr = match[1].trim();
 
-      // Clean up common JSON mistakes the AI might make (unquoted keys, trailing commas)
-      jsonStr = jsonStr.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
-      jsonStr = jsonStr.replace(/,\s*([}\]])/g, '$1');
+      // Gemini with response_format: 'json_object' returns valid JSON. No manual cleanup needed.
 
       let parsed;
       try {
