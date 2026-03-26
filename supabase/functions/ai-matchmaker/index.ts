@@ -186,7 +186,7 @@ Return ONLY the JSON object, no other text.`;
           model: "gemini-2.5-flash",
           max_tokens: 8192,
           messages: [
-            { role: "system", content: "You are a professional networking analyst. Return only a strictly valid JSON object. ALL JSON keys must be double-quoted and ensuring no trailing commas are used." },
+            { role: "system", content: "You are a professional networking analyst. Return ONLY a valid JSON object. Ensure all JSON formatting is strictly correct. ABSOLUTELY NO trailing commas. ALL property names MUST be double-quoted." },
             { role: "user", content: prompt },
           ],
           response_format: { type: "json_object" },
@@ -202,6 +202,9 @@ Return ONLY the JSON object, no other text.`;
       let jsonStr = content;
       const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (match) jsonStr = match[1].trim();
+
+      // Strip trailing commas from JSON string (a common cause of the 'expected double-quoted property name' error)
+      jsonStr = jsonStr.replace(/,\s*([\]}])/g, '$1');
 
       // Gemini with response_format: 'json_object' returns valid JSON. No manual cleanup needed.
 
