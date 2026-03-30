@@ -61,15 +61,23 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                         const company = getVal("Company");
                         const position = getVal("Position");
                         const url = getVal("URL");
+                        
+                        // New Optional Columns
+                        const bioCol = getVal("Bio");
+                        const interestsCol = getVal("Interests");
+                        const locationCol = getVal("Location");
 
                         // If there is absolutely no name or company, we probably hit a junk row at the end
                         if (!firstName && !lastName && !company) return null;
 
-                        // Compose bio from Email if present
-                        let bioStr = "";
+                        // Compose bio from custom column and Email if present
+                        let bioStr = bioCol ? bioCol + "\n" : "";
                         if (email) {
                             bioStr += `Email: ${email}\n`;
                         }
+
+                        // Parse optional comma-separated interests into the skills array
+                        const skillsArray = interestsCol ? interestsCol.split(',').map(s => s.trim()).filter(Boolean) : [];
 
                         return {
                             name: fullName || "Unknown Contact",
@@ -77,7 +85,9 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                             company: company || null,
                             companies: company ? [company] : [],
                             headline: position || null,
-                            bio: bioStr.trim() || null
+                            bio: bioStr.trim() || null,
+                            location: locationCol || null,
+                            skills: skillsArray
                         };
                     }).filter(Boolean); // remove nulls
 
@@ -127,7 +137,7 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                 <div className="space-y-4 py-4">
                     <div className="text-sm text-muted-foreground space-y-2">
                         <p>Upload a CSV file (e.g., LinkedIn Connections export) to bulk add contacts.</p>
-                        <p>Expected columns include: First Name, Last Name, URL, Email Address, Company, Position.</p>
+                        <p>Expected columns include: First Name, Last Name, URL, Email Address, Company, Position. <br/><span className="italic text-primary/70">(Optional: Bio, Interests, Location)</span></p>
                         <p className="font-semibold text-primary/80 mt-2">
                             * Note: On the free tier, we will add only 50 contacts.
                         </p>

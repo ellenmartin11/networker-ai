@@ -2,7 +2,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NetworkTab } from "@/components/NetworkTab";
 import { LeadsTab } from "@/components/LeadsTab";
 import { HomeTab } from "@/components/HomeTab";
-import { Users, Sparkles, Home } from "lucide-react";
+import { ConnectionsTab } from "@/components/ConnectionsTab";
+import { AccountTab } from "@/components/AccountTab";
+import { Users, Sparkles, Home, UserPlus, Settings } from "lucide-react";
 
 const LogoIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={className} fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
@@ -57,9 +59,17 @@ const Index = () => {
               <Users className="h-4 w-4" />
               My Network
             </TabsTrigger>
+            <TabsTrigger value="connections" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all">
+              <UserPlus className="h-4 w-4" />
+              Connect
+            </TabsTrigger>
             <TabsTrigger value="leads" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all">
               <Sparkles className="h-4 w-4" />
               NetGraph
+            </TabsTrigger>
+            <TabsTrigger value="account" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all ml-auto">
+              <Settings className="h-4 w-4" />
+              My Account
             </TabsTrigger>
           </TabsList>
 
@@ -70,8 +80,14 @@ const Index = () => {
             <TabsContent value="network">
               <NetworkTab />
             </TabsContent>
+            <TabsContent value="connections">
+              <ConnectionsTab />
+            </TabsContent>
             <TabsContent value="leads">
               <LeadsTab />
+            </TabsContent>
+            <TabsContent value="account">
+              <AccountTab />
             </TabsContent>
           </div>
         </Tabs>

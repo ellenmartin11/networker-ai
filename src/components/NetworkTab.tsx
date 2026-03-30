@@ -6,6 +6,9 @@ import { AddContactDialog } from "./AddContactDialog";
 import { ImportContactsDialog } from "./ImportContactsDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -24,34 +27,42 @@ interface Contact {
   created_at: string;
   schools?: string[] | null;
   skills?: string[] | null;
+  user_id?: string | null;
+  profiles?: { name: string | null } | null;
 }
 
 export function NetworkTab() {
+  const { user } = useAuth();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<string>("date");
+  const [filter, setFilter] = useState<"all" | "mine" | "shared">("all");
 
   const fetchContacts = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("contacts")
-      .select("id, name, headline, company, location, linkedin_url, created_at, schools, skills")
+      .select("id, name, headline, company, location, linkedin_url, created_at, schools, skills, user_id, profiles(name)")
       .neq("priority", -1)
       .order("created_at", { ascending: false });
-    if (!error && data) setContacts(data);
+    if (!error && data) setContacts(data as any);
     setLoading(false);
   };
 
   useEffect(() => { fetchContacts(); }, []);
 
-  const sortedAndFiltered = contacts.filter((c) =>
-    [c.name, c.headline, c.company, c.location, ...(c.schools || [])]
+  const sortedAndFiltered = contacts.filter((c) => {
+    const isShared = c.user_id && user && c.user_id !== user.id;
+    if (filter === "mine" && isShared) return false;
+    if (filter === "shared" && !isShared) return false;
+
+    return [c.name, c.headline, c.company, c.location, ...(c.schools || [])]
       .filter(Boolean)
       .join(" ")
       .toLowerCase()
-      .includes(search.toLowerCase())
-  ).sort((a, b) => {
+      .includes(search.toLowerCase());
+  }).sort((a, b) => {
     switch (sortBy) {
       case "name":
         return a.name.localeCompare(b.name);
@@ -104,6 +115,33 @@ export function NetworkTab() {
             <SelectItem value="school">School</SelectItem>
           </SelectContent>
         </Select>
+        {/* Replaced View Toggle with Network Filter Segmented Control */}
+        <div className="flex items-center gap-1 bg-white/40 backdrop-blur-md p-1 rounded-md border border-white/40 shadow-sm ml-auto mr-2">
+          <Button
+            variant={filter === "all" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setFilter("all")}
+            className="h-8 px-3 text-xs"
+          >
+            All
+          </Button>
+          <Button
+            variant={filter === "mine" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setFilter("mine")}
+            className="h-8 px-3 text-xs"
+          >
+            My Connections
+          </Button>
+          <Button
+            variant={filter === "shared" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setFilter("shared")}
+            className="h-8 px-3 text-xs"
+          >
+            Shared By Others
+          </Button>
+        </div>
         <ImportContactsDialog onContactsImported={fetchContacts} />
         <AddContactDialog onContactAdded={fetchContacts} />
       </div>
@@ -122,10 +160,22 @@ export function NetworkTab() {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {sortedAndFiltered.map((c) => (
-            <ContactCard key={c.id} {...c} onChanged={fetchContacts} />
-          ))}
+        <div className="space-y-4">
+          {sortedAndFiltered.map((c) => {
+            const isShared = c.user_id && user && c.user_id !== user.id;
+            return (
+              <div key={c.id} className="relative">
+                {isShared && (
+                  <div className="absolute -top-2 -right-2 z-10">
+                    <Badge variant="secondary" className="bg-primary/20 text-primary hover:bg-primary/30 text-[10px] px-2 py-0">
+                      Shared by {c.profiles?.name ? c.profiles.name : "Connection"}
+                    </Badge>
+                  </div>
+                )}
+                <ContactCard {...c} onChanged={fetchContacts} />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

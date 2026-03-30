@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/contexts/AuthContext";
 import { LeadCard } from "./LeadCard";
 import { GraphView } from "./GraphView";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,9 +33,12 @@ export interface Lead {
   match_reason: "Education" | "Industry" | "Role" | "Skills" | "Other";
   match_reason_details: string;
   suggested_intro?: string;
+  user_id?: string;
+  profiles?: { name: string | null } | null;
 }
 
 export function LeadsTab() {
+  const { user } = useAuth();
   const [leads, setLeads] = useState<Lead[]>(() => {
     const cached = sessionStorage.getItem("saved_leads");
     return cached ? JSON.parse(cached) : [];
@@ -114,34 +118,7 @@ export function LeadsTab() {
     loadProfile();
   }, []);
 
-  const saveProfile = async () => {
-    setSavingProfile(true);
-    try {
-      const skillsArray = userTags ? userTags.split(',').map(s => s.trim()).filter(Boolean) : [];
-
-      if (profileId) {
-        const { error } = await supabase
-          .from("contacts")
-          .update({ name: userName, bio: userBio, location: userLocation, headline: userAffiliations, skills: skillsArray })
-          .eq("id", profileId);
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from("contacts")
-          .insert({ name: userName, bio: userBio, location: userLocation, headline: userAffiliations, priority: -1, skills: skillsArray })
-          .select("id")
-          .single();
-        if (error) throw error;
-        if (data) setProfileId(data.id);
-      }
-      toast({ title: "Profile saved successfully!" });
-    } catch (e) {
-      console.error(e);
-      toast({ title: "Failed to save profile", variant: "destructive" });
-    } finally {
-      setSavingProfile(false);
-    }
-  };
+  // We no longer need saveProfile here since it moved to AccountTab.
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -173,59 +150,14 @@ export function LeadsTab() {
 
   return (
     <div className="space-y-5">
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label className="text-sm font-medium">Your Name</Label>
-            <Input
-              placeholder="e.g. Jane Doe"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
-            />
-          </div>
-          <div>
-            <Label className="text-sm font-medium">Your Location</Label>
-            <Input
-              placeholder="e.g. San Francisco, CA"
-              value={userLocation}
-              onChange={(e) => setUserLocation(e.target.value)}
-              className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
-            />
-          </div>
-        </div>
-        <div>
-          <Label className="text-sm font-medium">Your Affiliations (Schools, Companies)</Label>
-          <Input
-            placeholder="e.g. Yale, OpenAI, Boston Children's Hospital"
-            value={userAffiliations}
-            onChange={(e) => setUserAffiliations(e.target.value)}
-            className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
-          />
-        </div>
-        <div>
-          <Label className="text-sm font-medium">Your Interests / Tags (Comma separated)</Label>
-          <Input
-            placeholder="e.g. neuroscience, research, psychology, startups"
-            value={userTags}
-            onChange={(e) => setUserTags(e.target.value)}
-            className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
-          />
-        </div>
-        <div>
-          <Label className="text-sm font-medium">Your Profile / Bio</Label>
-          <Textarea
-            placeholder="Paste your LinkedIn bio, current role, or interests here to help AI find the best matches..."
-            value={userBio}
-            onChange={(e) => setUserBio(e.target.value)}
-            className="mt-1.5 min-h-[100px] resize-y bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all focus:bg-white"
-          />
-        </div>
-        <div className="flex justify-end">
-          <Button variant="secondary" onClick={saveProfile} disabled={savingProfile} className="gap-2">
-            {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            Save Profile
-          </Button>
+      <div className="bg-white/40 backdrop-blur-xl border border-white/40 p-5 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-xl font-display font-medium text-slate-800 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" /> NetGraph Matchmaker
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-lg">
+            Our AI continuously scans the connections across your network to find the absolute best people you should talk to based on your <strong className="text-primary font-medium">Account Profile</strong> settings.
+          </p>
         </div>
       </div>
 
@@ -311,6 +243,7 @@ export function LeadsTab() {
                 userAffiliations={userAffiliations}
                 userTags={userTags}
                 userBio={userBio}
+                currentUserId={user?.id}
               />
             ))}
           </div>
@@ -322,6 +255,7 @@ export function LeadsTab() {
             userAffiliations={userAffiliations}
             userTags={userTags}
             userBio={userBio}
+            currentUserId={user?.id}
           />
         )
       ) : (

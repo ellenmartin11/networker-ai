@@ -29,6 +29,7 @@ export type Database = {
           schools: string[] | null
           skills: string[] | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           bio?: string | null
@@ -44,6 +45,7 @@ export type Database = {
           schools?: string[] | null
           skills?: string[] | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           bio?: string | null
@@ -59,6 +61,7 @@ export type Database = {
           schools?: string[] | null
           skills?: string[] | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -67,6 +70,9 @@ export type Database = {
           id: string
           name: string | null
           bio: string | null
+          headline: string | null
+          linkedin_url: string | null
+          interests: string[] | null
           created_at: string
           updated_at: string
         }
@@ -74,6 +80,9 @@ export type Database = {
           id?: string
           name?: string | null
           bio?: string | null
+          headline?: string | null
+          linkedin_url?: string | null
+          interests?: string[] | null
           created_at?: string
           updated_at?: string
         }
@@ -81,6 +90,42 @@ export type Database = {
           id?: string
           name?: string | null
           bio?: string | null
+          headline?: string | null
+          linkedin_url?: string | null
+          interests?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_connections: {
+        Row: {
+          id: string
+          requester_id: string
+          target_id: string
+          status: string
+          requester_shares_contacts: boolean
+          target_shares_contacts: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          requester_id: string
+          target_id: string
+          status?: string
+          requester_shares_contacts?: boolean
+          target_shares_contacts?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          requester_id?: string
+          target_id?: string
+          status?: string
+          requester_shares_contacts?: boolean
+          target_shares_contacts?: boolean
           created_at?: string
           updated_at?: string
         }

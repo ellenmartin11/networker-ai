@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Building2, Sparkles, Loader2, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface LeadCardProps {
   name: string;
@@ -17,6 +18,9 @@ interface LeadCardProps {
   userAffiliations: string;
   userTags: string;
   userBio: string;
+  user_id?: string;
+  profiles?: { name: string | null } | null;
+  currentUserId?: string;
 }
 
 function ScoreBadge({ score }: { score: number }) {
@@ -30,7 +34,7 @@ function ScoreBadge({ score }: { score: number }) {
 
 export function LeadCard({
   name, headline, company, match_score, match_reason, match_reason_details, suggested_intro, index,
-  userName, userLocation, userAffiliations, userTags, userBio
+  userName, userLocation, userAffiliations, userTags, userBio, user_id, profiles, currentUserId
 }: LeadCardProps) {
   const [intro, setIntro] = useState(suggested_intro || "");
   const [loadingIntro, setLoadingIntro] = useState(false);
@@ -63,9 +67,9 @@ export function LeadCard({
       if (res.data?.error) throw new Error(res.data.error);
 
       setIntro(res.data?.greeting || "Could not generate greeting.");
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setIntro("Failed to generate greeting.");
+      setIntro(e.message || "Failed to generate greeting.");
     } finally {
       setLoadingIntro(false);
     }
@@ -89,8 +93,15 @@ export function LeadCard({
             {initials}
           </div>
           <div>
-            <h3 className="font-display font-semibold text-foreground">{name}</h3>
-            {headline && <p className="text-sm text-muted-foreground">{headline}</p>}
+            <div className="flex items-center gap-2">
+              <h3 className="font-display font-semibold text-foreground">{name}</h3>
+              {user_id && currentUserId && user_id !== currentUserId && (
+                <Badge variant="secondary" className="bg-primary/20 text-primary hover:bg-primary/30 text-[10px] px-2 py-0 h-4 min-h-0 line-clamp-1">
+                  Shared by {profiles?.name ? profiles.name : "Connection"}
+                </Badge>
+              )}
+            </div>
+            {headline && <p className="text-sm text-muted-foreground mt-0.5">{headline}</p>}
             {company && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                 <Building2 className="h-3 w-3" /> {company}

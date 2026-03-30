@@ -22,11 +22,12 @@ interface GraphViewProps {
     userAffiliations?: string;
     userTags?: string;
     userBio?: string;
+    currentUserId?: string;
 }
 
-export function GraphView({ leads, userName, userLocation, userAffiliations, userTags, userBio }: GraphViewProps) {
+export function GraphView({ leads, userName, userLocation, userAffiliations, userTags, userBio, currentUserId }: GraphViewProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const fgRef = useRef<Record<string, (...args: unknown[]) => unknown> | null>(null);
+    const fgRef = useRef<any>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
     const isDark = document.documentElement.className.includes("dark");
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -66,6 +67,9 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                 ) || "Other";
 
                 const color = REASON_COLORS[reasonKey];
+                const isShared = lead.user_id && currentUserId && lead.user_id !== currentUserId;
+                const sharedText = isShared ? `(Shared by ${lead.profiles?.name || "Connection"})` : null;
+
                 return {
                     id: `lead_${i}`,
                     name: lead.name,
@@ -74,6 +78,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                     group: 2,
                     val: 15,
                     color: color,
+                    sharedText: sharedText,
                     leadData: lead, // Attach the full lead object for click handlers
                 };
             }),
@@ -86,7 +91,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
         }));
 
         return { nodes, links };
-    }, [leads, isDark, userName]);
+    }, [leads, isDark, userName, currentUserId]);
 
     useEffect(() => {
         if (fgRef.current) {
@@ -161,9 +166,9 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
             if (res.data?.error) throw new Error(res.data.error);
 
             setIntro(res.data?.greeting || "Could not generate greeting.");
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            setIntro("Failed to generate greeting.");
+            setIntro(e.message || "Failed to generate greeting.");
         } finally {
             setLoadingIntro(false);
         }
@@ -195,7 +200,7 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                 width={dimensions.width}
                 height={dimensions.height}
                 graphData={graphData}
-                nodeCanvasObject={(node: { x?: number, y?: number, val?: number, color?: string, name?: string }, ctx: CanvasRenderingContext2D, globalScale: number) => {
+                nodeCanvasObject={(node: { x?: number, y?: number, val?: number, color?: string, name?: string, sharedText?: string | null }, ctx: CanvasRenderingContext2D, globalScale: number) => {
                     if (node.x === undefined || node.y === undefined || node.val === undefined || node.color === undefined) return;
                     // Draw Node Circle
                     ctx.beginPath();
@@ -212,6 +217,12 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                     ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)';
                     // Position text slightly below the node
                     ctx.fillText(label, node.x, node.y + (node.val / 2) + fontSize + 2);
+
+                    if (node.sharedText) {
+                        ctx.font = `italic ${fontSize * 0.8}px Sans-Serif`;
+                        ctx.fillStyle = isDark ? 'rgba(200, 200, 255, 0.7)' : 'rgba(100, 100, 150, 0.8)';
+                        ctx.fillText(node.sharedText, node.x, node.y + (node.val / 2) + fontSize + 2 + fontSize);
+                    }
                 }}
                 nodeColor={(node: { color?: string }) => node.color || ""}
                 onNodeClick={handleNodeClick as (node: { id: string, leadData: Lead, x: number, y: number }) => void}
@@ -229,8 +240,13 @@ export function GraphView({ leads, userName, userLocation, userAffiliations, use
                 <div className="absolute top-4 right-4 w-80 bg-white/90 backdrop-blur-xl border border-white/50 rounded-xl shadow-lg z-10 animate-fade-in flex flex-col max-h-[calc(100%-2rem)] overflow-y-auto">
                     <div className="p-4 border-b border-white/30 flex justify-between items-start sticky top-0 bg-white/90 backdrop-blur-xl z-20">
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
                                 <h3 className="font-semibold text-lg leading-tight">{selectedLead.name}</h3>
+                                {selectedLead.user_id && currentUserId && selectedLead.user_id !== currentUserId && (
+                                    <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] bg-primary/20 text-primary font-semibold">
+                                        Shared by {selectedLead.profiles?.name || "Connection"}
+                                    </span>
+                                )}
                                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${selectedLead.match_score >= 80 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'}`}>
                                     {selectedLead.match_score}% Match
                                 </span>

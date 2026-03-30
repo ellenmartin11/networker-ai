@@ -6,6 +6,36 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function fetchWithRetry(url: string, options: any, maxRetries = 4, baseDelayMs = 2000) {
+  let lastError;
+  let lastResponse;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok) return res;
+
+      lastResponse = res;
+      if (res.status !== 503 && res.status !== 429 && res.status >= 400 && res.status < 500) {
+        return res; // Don't retry 4xx errors except 429 Rate Limit
+      }
+      
+      console.warn(`Gemini API attempt ${attempt + 1} failed with status ${res.status}.`);
+    } catch (e) {
+      console.warn(`Gemini API attempt ${attempt + 1} fatal error:`, e);
+      lastError = e;
+    }
+
+    if (attempt < maxRetries - 1) {
+      const delay = baseDelayMs * Math.pow(2, attempt) + Math.random() * 1000;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+
+  if (lastResponse) return lastResponse;
+  throw lastError || new Error("Max retries exceeded");
+}
+
 async function queryNeo4j(query: string, params: Record<string, unknown> = {}) {
   const NEO4J_URI = Deno.env.get("NEO4J_URI");
   const NEO4J_USERNAME = Deno.env.get("NEO4J_USERNAME");
@@ -61,15 +91,19 @@ serve(async (req) => {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not configured");
 
-    // Get all contacts from Supabase
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header");
+
+    // Initialize Supabase client with the user's JWT to strict-enforce Row Level Security (RLS)
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
     );
 
     const { data: contacts, error: dbErr } = await supabase
       .from("contacts")
-      .select("*")
+      .select("*, profiles(name)")
       .neq("priority", -1)
       .order("created_at", { ascending: false });
 
@@ -115,7 +149,7 @@ serve(async (req) => {
     }
 
     // Helper to evaluate a batch
-    const evaluateBatch = async (batchContacts: { name: string, headline?: string, company?: string, bio?: string, schools?: string[], companies?: string[], skills?: string[] }[]) => {
+    const evaluateBatch = async (batchContacts: any[]) => {
       const contactSummaries = batchContacts
         .map((c) => {
           let text = `- ${c.name}: ${c.headline || "No headline"}. Current Company: ${c.company || "Unknown"}. Bio: ${(c.bio || "").slice(0, 200)}`;
@@ -176,7 +210,7 @@ DO NOT rank someone high just because they have a "strong" or "long" bio. Follow
 
 Return ONLY the JSON object, no other text.`;
 
-      const aiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+      const aiResponse = await fetchWithRetry("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${GEMINI_API_KEY}`,
@@ -194,7 +228,11 @@ Return ONLY the JSON object, no other text.`;
       });
 
       if (!aiResponse.ok) {
-        throw new Error(`Gemini API Error: ${aiResponse.status} ${await aiResponse.text()}`);
+        const text = await aiResponse.text();
+        if (aiResponse.status === 503) {
+            throw new Error(`Gemini API is currently experiencing unusually high demand. System tried to back off 4 times but failed. Please try again in a few moments.`);
+        }
+        throw new Error(`Gemini API Error: ${aiResponse.status} ${text}`);
       }
 
       const aiData = await aiResponse.json();
@@ -215,7 +253,15 @@ Return ONLY the JSON object, no other text.`;
         console.error("Failed to parse JSON:", jsonStr);
         throw err;
       }
-      return parsed.leads || [];
+      const parsedLeads = parsed.leads || [];
+      return parsedLeads.map((lead: any) => {
+        const original = batchContacts.find(c => c.name === lead.name);
+        if (original) {
+          lead.user_id = original.user_id;
+          lead.profiles = original.profiles;
+        }
+        return lead;
+      });
     };
 
     // Execute all batches in parallel
