@@ -8,6 +8,10 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
 import Landing from "./pages/Landing";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Collaborate from "./pages/Collaborate";
+import Feedback from "./pages/Feedback";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -45,6 +49,10 @@ const App = () => (
             <Route path="/product" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/collaborate" element={<Collaborate />} />
+            <Route path="/feedback" element={<Feedback />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

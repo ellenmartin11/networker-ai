@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Search, UserPlus, Check, X, Clock, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,6 +37,12 @@ export function ConnectionsTab() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Profile[]>([]);
   const [searching, setSearching] = useState(false);
+
+  // Privacy Policy state
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [pendingShareConnection, setPendingShareConnection] = useState<Connection | null>(null);
+  const [hasAgreedToPrivacy, setHasAgreedToPrivacy] = useState(() => localStorage.getItem("networker_privacy_agreed") === "true");
 
   // Fetch connections and the related profiles
   const fetchConnections = async () => {
@@ -135,11 +143,35 @@ export function ConnectionsTab() {
     }
   };
 
-  const toggleShareContacts = async (connection: Connection) => {
+  const handleToggleAttempt = (connection: Connection) => {
     if (!user) return;
     const isRequester = connection.requester_id === user.id;
     const currentStatus = isRequester ? connection.requester_shares_contacts : connection.target_shares_contacts;
     const newStatus = !currentStatus;
+
+    if (newStatus && !hasAgreedToPrivacy) {
+      setPendingShareConnection(connection);
+      setPrivacyAccepted(false);
+      setShowPrivacyDialog(true);
+    } else {
+      toggleShareContacts(connection, newStatus);
+    }
+  };
+
+  const confirmPrivacyAndShare = () => {
+    if (!privacyAccepted) return;
+    localStorage.setItem("networker_privacy_agreed", "true");
+    setHasAgreedToPrivacy(true);
+    setShowPrivacyDialog(false);
+    if (pendingShareConnection) {
+      toggleShareContacts(pendingShareConnection, true);
+      setPendingShareConnection(null);
+    }
+  };
+
+  const toggleShareContacts = async (connection: Connection, newStatus: boolean) => {
+    if (!user) return;
+    const isRequester = connection.requester_id === user.id;
     
     try {
       const { error } = await supabase
@@ -281,7 +313,7 @@ export function ConnectionsTab() {
                         <Switch
                           id={`share-${conn.id}`}
                           checked={iShare}
-                          onCheckedChange={() => toggleShareContacts(conn)}
+                          onCheckedChange={() => handleToggleAttempt(conn)}
                           className="data-[state=checked]:bg-primary"
                         />
                       </div>
@@ -315,6 +347,53 @@ export function ConnectionsTab() {
           )}
         </div>
       )}
+
+      {/* Privacy Policy Dialog */}
+      <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
+        <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-primary flex justify-center mt-2 mb-2">Terms & Privacy Policy</DialogTitle>
+            <DialogDescription className="text-center text-slate-600 space-y-4">
+              <p>
+                By ticking this box, you agree to share your extended network with this contact, allowing them to perform AI Similarity Searches and find mutual matches.
+              </p>
+              <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 text-sm text-slate-700 text-left">
+                <strong>Privacy Commitment:</strong>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>No emails, phone numbers, or private contact information will be shared.</li>
+                  <li>Only public details like names, headlines, skills, and LinkedIn profile URLs are accessible.</li>
+                  <li>You can stop sharing your contacts at any time.</li>
+                </ul>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2 my-4">
+            <Checkbox 
+              id="privacy-agree" 
+              checked={privacyAccepted}
+              onCheckedChange={(checked) => setPrivacyAccepted(checked === true)}
+            />
+            <label
+              htmlFor="privacy-agree"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-700 cursor-pointer"
+            >
+              I agree to the Terms & Privacy Policy.
+            </label>
+          </div>
+          <DialogFooter className="sm:justify-end gap-2 sm:gap-0 mt-2">
+            <Button variant="outline" onClick={() => setShowPrivacyDialog(false)} className="w-full sm:w-auto">
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmPrivacyAndShare} 
+              disabled={!privacyAccepted}
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90"
+            >
+              Agree & Share
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, Loader2, Zap, Search } from "lucide-react";
+import { Sparkles, Loader2, Zap, Search, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,7 +38,7 @@ export interface Lead {
 }
 
 export function LeadsTab() {
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const [leads, setLeads] = useState<Lead[]>(() => {
     const cached = sessionStorage.getItem("saved_leads");
     return cached ? JSON.parse(cached) : [];
@@ -83,6 +83,12 @@ export function LeadsTab() {
   useEffect(() => {
     sessionStorage.setItem("saved_top_n", topN.toString());
   }, [topN]);
+
+  useEffect(() => {
+    if (!isPro && topN > 5) {
+      setTopN(5);
+    }
+  }, [isPro, topN]);
 
   useEffect(() => {
     sessionStorage.setItem("saved_view", view);
@@ -171,9 +177,15 @@ export function LeadsTab() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="5">Top 5</SelectItem>
-                <SelectItem value="10">Top 10</SelectItem>
-                <SelectItem value="20">Top 20</SelectItem>
-                <SelectItem value="10000">All Contacts</SelectItem>
+                <SelectItem value="10" disabled={!isPro}>
+                  <span className="flex items-center gap-1.5">Top 10 {!isPro && <Lock className="w-3 h-3 opacity-50" />}</span>
+                </SelectItem>
+                <SelectItem value="20" disabled={!isPro}>
+                  <span className="flex items-center gap-1.5">Top 20 {!isPro && <Lock className="w-3 h-3 opacity-50" />}</span>
+                </SelectItem>
+                <SelectItem value="10000" disabled={!isPro}>
+                  <span className="flex items-center gap-1.5">All Contacts {!isPro && <Lock className="w-3 h-3 opacity-50" />}</span>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

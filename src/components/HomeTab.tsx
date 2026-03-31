@@ -1,4 +1,5 @@
-import { Sparkles, Heart, Zap, User, Linkedin, Github } from "lucide-react";
+import { Sparkles, Heart, Zap, User, Linkedin, Github, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function HomeTab() {
     return (
@@ -77,6 +78,21 @@ export function HomeTab() {
                         </p>
                     </div>
                 </div>
+            </section>
+
+            <section className="bg-white/60 backdrop-blur-xl rounded-xl border border-white/40 p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                        <ShieldCheck className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-foreground">Your Privacy Matters</h4>
+                        <p className="text-sm text-muted-foreground">We never sell your data. You control what you share.</p>
+                    </div>
+                </div>
+                <Link to="/privacy" className="text-sm font-medium text-primary hover:underline whitespace-nowrap">
+                    Read our Privacy Policy &rarr;
+                </Link>
             </section>
         </div>
     );
