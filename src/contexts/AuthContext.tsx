@@ -41,18 +41,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, name, headline, linkedin_url, interests')
+        .select('id, name, headline, linkedin_url, interests, subscription_tier')
         .eq('id', userId)
         .single();
       
       if (!error && data) {
-        // Mock Subscription Tier mapping
+        // Use the subscription tier from the database, fallback to free
         const profileData = { ...data } as UserProfile;
         
         if (currentUserEmail === 'martin.ellenjane@gmail.com') {
           profileData.subscription_tier = 'pro';
         } else {
-          profileData.subscription_tier = 'free';
+          profileData.subscription_tier = data.subscription_tier || 'free';
         }
 
         setProfile(profileData);

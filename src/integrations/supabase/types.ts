@@ -75,6 +75,7 @@ export type Database = {
           interests: string[] | null
           created_at: string
           updated_at: string
+          subscription_tier: string | null
         }
         Insert: {
           id?: string
@@ -85,6 +86,7 @@ export type Database = {
           interests?: string[] | null
           created_at?: string
           updated_at?: string
+          subscription_tier?: string | null
         }
         Update: {
           id?: string
@@ -95,6 +97,7 @@ export type Database = {
           interests?: string[] | null
           created_at?: string
           updated_at?: string
+          subscription_tier?: string | null
         }
         Relationships: []
       }
