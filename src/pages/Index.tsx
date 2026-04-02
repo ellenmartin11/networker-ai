@@ -4,7 +4,8 @@ import { LeadsTab } from "@/components/LeadsTab";
 import { HomeTab } from "@/components/HomeTab";
 import { ConnectionsTab } from "@/components/ConnectionsTab";
 import { AccountTab } from "@/components/AccountTab";
-import { Users, Sparkles, Home, UserPlus, Settings } from "lucide-react";
+import { Users, Sparkles, Home, UserPlus, Settings, Layers } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const LogoIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={className} fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
@@ -67,6 +68,13 @@ const Index = () => {
               <Sparkles className="h-4 w-4" />
               NetGraph
             </TabsTrigger>
+            <Link
+              to="/netcluster"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all text-violet-600 hover:bg-violet-50 hover:text-violet-700 whitespace-nowrap"
+            >
+              <Layers className="h-4 w-4" />
+              NetCluster
+            </Link>
             <TabsTrigger value="account" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all ml-auto">
               <Settings className="h-4 w-4" />
               My Account

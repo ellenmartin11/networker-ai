@@ -1,5 +1,6 @@
-import { Sparkles, Heart, Zap, User, Linkedin, Github, ShieldCheck } from "lucide-react";
+import { Sparkles, Heart, Zap, User, Linkedin, Github, ShieldCheck, Layers, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export function HomeTab() {
     return (
@@ -15,6 +16,32 @@ export function HomeTab() {
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mt-4">
                     <Zap className="h-4 w-4" />
                     <span>We are currently in Beta!</span>
+                </div>
+            </section>
+
+            {/* NetCluster Discovery Card */}
+            <section className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-indigo-50 to-purple-50 backdrop-blur-xl rounded-xl border border-violet-200/60 shadow-sm p-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-100/40 to-indigo-100/20 pointer-events-none" />
+                <div className="relative flex flex-col sm:flex-row items-center gap-5">
+                    <div className="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
+                        <Layers className="h-8 w-8 text-violet-600" />
+                    </div>
+                    <div className="flex-1 text-center sm:text-left">
+                        <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                            <h3 className="text-xl font-display font-bold text-violet-800">
+                                Introducing NetCluster ✨
+                            </h3>
+                            <span className="text-[10px] font-bold uppercase tracking-wider bg-violet-100 text-violet-600 px-2 py-0.5 rounded-full border border-violet-200">New</span>
+                        </div>
+                        <p className="text-sm text-violet-700/80 leading-relaxed max-w-xl">
+                            See the <strong>hidden patterns</strong> in your network. Tag your contacts, and watch them self-organize into clusters — by school, industry, interest, or any category you define.
+                        </p>
+                    </div>
+                    <Button asChild className="bg-violet-600 hover:bg-violet-700 text-white shadow-md shrink-0 gap-2">
+                        <Link to="/netcluster">
+                            Open NetCluster <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </Button>
                 </div>
             </section>
 

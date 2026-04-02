@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Edit2, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Edit2, Loader2, Layers } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface EditContactDialogProps {
@@ -13,7 +16,14 @@ interface EditContactDialogProps {
     onContactUpdated: () => void;
 }
 
+interface ContactTag {
+    id: string;
+    name: string;
+    color: string;
+}
+
 export function EditContactDialog({ contactId, onContactUpdated }: EditContactDialogProps) {
+    const { user } = useAuth();
     const [open, setOpen] = useState(false);
     const [bio, setBio] = useState("");
     const [name, setName] = useState("");
@@ -24,6 +34,9 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
     const [schoolsStr, setSchoolsStr] = useState("");
     const [companiesStr, setCompaniesStr] = useState("");
     const [tagsStr, setTagsStr] = useState("");
+    // NetCluster: predefined tags only
+    const [availableTags, setAvailableTags] = useState<ContactTag[]>([]);
+    const [selectedNetClusterTags, setSelectedNetClusterTags] = useState<string[]>([]);
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -31,8 +44,19 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
     useEffect(() => {
         if (open) {
             loadContact();
+            loadAvailableTags();
         }
     }, [open]);
+
+    const loadAvailableTags = async () => {
+        if (!user) return;
+        const { data } = await (supabase as any)
+            .from("contact_tags")
+            .select("id, name, color")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: true });
+        if (data) setAvailableTags(data as ContactTag[]);
+    };
 
     const loadContact = async () => {
         setLoading(true);
@@ -54,6 +78,7 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
                 setSchoolsStr(data.schools?.join(", ") || "");
                 setCompaniesStr(data.companies?.join(", ") || "");
                 setTagsStr(data.skills?.join(", ") || "");
+                setSelectedNetClusterTags((data as any).netcluster_tags || []);
             }
         } catch (e) {
             console.error(e);
@@ -62,6 +87,12 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
         } finally {
             setLoading(false);
         }
+    };
+
+    const toggleNetClusterTag = (tagName: string, checked: boolean) => {
+        setSelectedNetClusterTags((prev) =>
+            checked ? [...new Set([...prev, tagName])] : prev.filter((t) => t !== tagName)
+        );
     };
 
     const saveContact = async () => {
@@ -90,7 +121,8 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
                     companies: finalCompanies,
                     schools: schools,
                     skills: skills,
-                })
+                    netcluster_tags: selectedNetClusterTags,
+                } as any)
                 .eq("id", contactId);
 
             if (error) throw error;
@@ -112,7 +144,7 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
                     <Edit2 className="h-4 w-4" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg bg-card border-border">
+            <DialogContent className="sm:max-w-lg bg-card border-border max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="font-display text-xl">Edit Contact</DialogTitle>
                 </DialogHeader>
@@ -156,10 +188,78 @@ export function EditContactDialog({ contactId, onContactUpdated }: EditContactDi
                                 <Input value={companiesStr} onChange={(e) => setCompaniesStr(e.target.value)} placeholder="e.g. Google, OpenAI" className="mt-1 bg-muted border-border" />
                             </div>
                             <div className="col-span-2">
-                                <Label>Interests / Tags (Comma separated)</Label>
+                                <Label>Tags (Comma separated)</Label>
+                                <p className="text-[11px] text-muted-foreground mb-1">Used by NetGraph AI matching — flexible formatting.</p>
                                 <Input value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="e.g. neuroscience, research, psychology" className="mt-1 bg-muted border-border" />
                             </div>
                         </div>
+
+                        {/* NetCluster Tags — predefined only */}
+                        <div className="rounded-lg border border-violet-200/60 bg-violet-50/50 p-3.5 space-y-2.5">
+                            <div className="flex items-center gap-2">
+                                <Layers className="h-3.5 w-3.5 text-violet-600 shrink-0" />
+                                <Label className="text-sm font-semibold text-violet-800">NetCluster Tags</Label>
+                            </div>
+                            <p className="text-[11px] text-violet-600/80 leading-relaxed">
+                                Used by NetCluster graph clustering — strict predefined tags only.{" "}
+                                {availableTags.length === 0 && (
+                                    <span>
+                                        <a href="/netcluster" className="underline underline-offset-2 hover:text-violet-800 font-medium" target="_blank" rel="noopener noreferrer">
+                                            Create tags in NetCluster
+                                        </a>{" "}first.
+                                    </span>
+                                )}
+                            </p>
+                            {availableTags.length === 0 ? (
+                                <p className="text-xs text-muted-foreground italic">No tags defined yet.</p>
+                            ) : (
+                                <div className="flex flex-wrap gap-2">
+                                    {availableTags.map((tag) => {
+                                        const checked = selectedNetClusterTags.includes(tag.name);
+                                        return (
+                                            <label
+                                                key={tag.id}
+                                                className={`flex items-center gap-1.5 cursor-pointer rounded-full px-2.5 py-1 border text-xs font-medium transition-all select-none ${
+                                                    checked
+                                                        ? "border-transparent text-white shadow-sm"
+                                                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                                                }`}
+                                                style={checked ? { backgroundColor: tag.color, borderColor: tag.color } : {}}
+                                            >
+                                                <Checkbox
+                                                    checked={checked}
+                                                    onCheckedChange={(v) => toggleNetClusterTag(tag.name, v === true)}
+                                                    className="hidden"
+                                                />
+                                                <div
+                                                    className="w-2 h-2 rounded-full shrink-0"
+                                                    style={{ backgroundColor: checked ? "rgba(255,255,255,0.7)" : tag.color }}
+                                                />
+                                                {tag.name}
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            {selectedNetClusterTags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 pt-0.5">
+                                    {selectedNetClusterTags.map((t) => {
+                                        const tag = availableTags.find((at) => at.name === t);
+                                        return (
+                                            <Badge
+                                                key={t}
+                                                variant="secondary"
+                                                className="text-[10px] font-medium"
+                                                style={{ backgroundColor: `${tag?.color}22`, color: tag?.color, borderColor: `${tag?.color}44` }}
+                                            >
+                                                {t}
+                                            </Badge>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
                         <div>
                             <Label>LinkedIn URL</Label>
                             <Input value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/..." className="mt-1 bg-muted border-border" />

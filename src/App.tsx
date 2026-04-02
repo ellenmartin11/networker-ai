@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Privacy from "./pages/Privacy";
 import Collaborate from "./pages/Collaborate";
 import Feedback from "./pages/Feedback";
+import NetCluster from "./pages/NetCluster";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/collaborate" element={<Collaborate />} />
             <Route path="/feedback" element={<Feedback />} />
+            <Route path="/netcluster" element={<ProtectedRoute><NetCluster /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
