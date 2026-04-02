@@ -78,6 +78,7 @@ export function AccountTab() {
           .select("name, bio, location, headline, skills")
           .eq("user_id", user.id)
           .eq("priority", -1)
+          .order("created_at", { ascending: false })
           .limit(1)
           .single();
 
@@ -123,6 +124,7 @@ export function AccountTab() {
         .select("id")
         .eq("user_id", user.id)
         .eq("priority", -1)
+        .order("created_at", { ascending: false })
         .limit(1)
         .single();
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, MapPin, ExternalLink, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Trash2, Loader2, AlertTriangle, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -15,10 +15,11 @@ interface ContactCardProps {
   linkedin_url?: string | null;
   skills?: string[] | null;
   created_at: string;
+  isExcluded?: boolean;
   onChanged?: () => void;
 }
 
-export function ContactCard({ id, name, headline, company, location, linkedin_url, skills, onChanged }: ContactCardProps) {
+export function ContactCard({ id, name, headline, company, location, linkedin_url, skills, isExcluded = false, onChanged }: ContactCardProps) {
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
@@ -45,7 +46,7 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
     .toUpperCase();
 
   return (
-    <div className="group flex items-center gap-4 rounded-lg border border-white/40 bg-white/60 backdrop-blur-xl shadow-sm p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-glow)]">
+    <div className={`group flex items-center gap-4 rounded-lg border border-white/40 bg-white/60 backdrop-blur-xl shadow-sm p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-glow)] ${isExcluded ? 'opacity-60 grayscale-[0.2]' : ''}`}>
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary">
         {initials}
       </div>
@@ -57,6 +58,11 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
               <a href={linkedin_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
+            )}
+            {isExcluded && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-muted-foreground/20">
+                <EyeOff className="h-3 w-3" /> Excluded
+              </span>
             )}
             {(!skills || skills.length === 0) && (
               <TooltipProvider>
@@ -85,11 +91,13 @@ export function ContactCard({ id, name, headline, company, location, linkedin_ur
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <EditContactDialog contactId={id} onContactUpdated={() => onChanged?.()} />
-          <Button variant="ghost" size="icon" onClick={handleDelete} disabled={deleting} className="text-muted-foreground hover:text-destructive flex-shrink-0">
-            {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-          </Button>
+        <div className="flex flex-col items-end flex-shrink-0">
+          <div className="flex items-center gap-1">
+            <EditContactDialog contactId={id} onContactUpdated={() => onChanged?.()} />
+            <Button variant="ghost" size="icon" onClick={handleDelete} disabled={deleting} className="text-muted-foreground hover:text-destructive flex-shrink-0">
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

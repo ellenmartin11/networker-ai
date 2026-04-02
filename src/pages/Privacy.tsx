@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LogoIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={className} fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
@@ -23,15 +24,18 @@ const LogoIcon = ({ className }: { className?: string }) => (
 );
 
 export default function Privacy() {
+  const { user } = useAuth();
+  const backRoute = user ? "/platform" : "/";
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e0f2f1] via-[#ebf4fa] to-[#e6e6f0] overflow-hidden">
       <nav className="fixed top-0 w-full p-4 flex justify-between items-center z-50 bg-white/40 backdrop-blur-md border-b border-white/40">
-        <Link to="/" className="flex items-center gap-2 font-display text-xl font-medium text-primary ml-4 hover:opacity-80 transition-opacity">
+        <Link to={backRoute} className="flex items-center gap-2 font-display text-xl font-medium text-primary ml-4 hover:opacity-80 transition-opacity">
           <LogoIcon className="w-6 h-6" />
           <span>networker<span className="font-semibold">-ai</span></span>
         </Link>
         <div className="flex gap-4 mr-4">
-          <Link to="/">
+          <Link to={backRoute}>
             <Button variant="ghost" className="font-medium hover:bg-white/50 gap-2"><ArrowLeft className="w-4 h-4"/> Back</Button>
           </Link>
         </div>

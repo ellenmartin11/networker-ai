@@ -8,6 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+
 interface ImportContactsDialogProps {
     onContactsImported: () => void;
 }
@@ -137,6 +144,26 @@ export function ImportContactsDialog({ onContactsImported }: ImportContactsDialo
                 <div className="space-y-4 py-4">
                     <div className="text-sm text-muted-foreground space-y-2">
                         <p>Upload a CSV file (e.g., LinkedIn Connections export) to bulk add contacts.</p>
+                        
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="item-1" className="border-0">
+                                <AccordionTrigger className="py-2 text-sm font-medium text-primary hover:no-underline">
+                                    How to export your LinkedIn data?
+                                </AccordionTrigger>
+                                <AccordionContent className="pb-4 text-sm text-muted-foreground">
+                                    <ol className="list-decimal pl-4 space-y-1">
+                                        <li>Go to LinkedIn <strong>Settings & Privacy</strong></li>
+                                        <li>Click <strong>Data privacy</strong> on the left menu</li>
+                                        <li>Select <strong>Get a copy of your data</strong></li>
+                                        <li>Check <strong>Connections</strong> and request the archive</li>
+                                    </ol>
+                                    <p className="text-xs text-amber-600 dark:text-amber-500 italic mt-3 font-medium bg-amber-50 dark:bg-amber-950/50 inline-block px-2 py-1 rounded">
+                                        *Note: LinkedIn can take up to a few days to email you this spreadsheet.
+                                    </p>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+
                         <p>Expected columns include: First Name, Last Name, URL, Email Address, Company, Position. <br/><span className="italic text-primary/70">(Optional: Bio, Interests, Location)</span></p>
                         <p className="font-semibold text-primary/80 mt-2">
                             * Note: On the free tier, we will add only 50 contacts.

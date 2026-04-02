@@ -85,7 +85,8 @@ serve(async (req) => {
       user_location = "",
       user_affiliations = "",
       user_tags = "",
-      match_preference = "all"
+      match_preference = "all",
+      excluded_sources = []
     } = await req.json();
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
@@ -101,14 +102,28 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: contacts, error: dbErr } = await supabase
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) throw new Error("Unauthorized");
+    const currentUserId = userData.user.id;
+
+    const { data: dbContacts, error: dbErr } = await supabase
       .from("contacts")
       .select("*, profiles(name)")
       .neq("priority", -1)
       .order("created_at", { ascending: false });
 
     if (dbErr) throw dbErr;
-    if (!contacts?.length) {
+    let contacts = dbContacts || [];
+    
+    if (excluded_sources.length > 0) {
+       contacts = contacts.filter(c => {
+           const isMe = c.user_id === currentUserId || !c.user_id;
+           const key = isMe ? 'me' : c.user_id;
+           return !excluded_sources.includes(key);
+       });
+    }
+
+    if (!contacts.length) {
       return new Response(JSON.stringify({ leads: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

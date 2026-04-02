@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Search, Users, Sparkles } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Search, Users, Sparkles, Settings2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ContactCard } from "./ContactCard";
 import { AddContactDialog } from "./AddContactDialog";
@@ -16,6 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
 
 interface Contact {
   id: string;
@@ -25,6 +28,7 @@ interface Contact {
   location: string | null;
   linkedin_url: string | null;
   created_at: string;
+  include_in_network?: boolean;
   schools?: string[] | null;
   skills?: string[] | null;
   user_id?: string | null;
@@ -40,17 +44,61 @@ export function NetworkTab() {
   const [filter, setFilter] = useState<"all" | "mine" | "shared">("all");
 
   const fetchContacts = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("contacts")
-      .select("id, name, headline, company, location, linkedin_url, created_at, schools, skills, user_id, profiles(name)")
-      .neq("priority", -1)
-      .order("created_at", { ascending: false });
-    if (!error && data) setContacts(data as any);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("contacts")
+        .select("id, name, headline, company, location, linkedin_url, created_at, schools, skills, user_id, profiles(name)")
+        .neq("priority", -1)
+        .order("created_at", { ascending: false });
+      if (!error && data) setContacts(data as any);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchContacts(); }, []);
+
+  const [excludedSources, setExcludedSources] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('excluded_sources') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const uniqueSources = useMemo(() => {
+    const sourcesMap = new Map<string, { userId: string | null; name: string; total: number; included: number }>();
+    
+    contacts.forEach(c => {
+        const isMe = c.user_id === user?.id || !c.user_id;
+        const key = isMe ? "me" : c.user_id!;
+        const sourceName = isMe ? "My Connections" : (c.profiles?.name || "Shared Connection");
+        const isIncluded = !excludedSources.includes(key); 
+
+        if (!sourcesMap.has(key)) {
+            sourcesMap.set(key, { userId: isMe ? 'me' : c.user_id, name: sourceName, total: 0, included: 0 });
+        }
+        const source = sourcesMap.get(key)!;
+        source.total += 1;
+        if (isIncluded) source.included += 1;
+    });
+
+    return Array.from(sourcesMap.values());
+  }, [contacts, user, excludedSources]);
+
+  const { toast } = useToast();
+
+  const handleToggleSource = (sourceKey: string | null, included: boolean) => {
+      const key = sourceKey || 'me';
+      const newExcluded = included 
+        ? excludedSources.filter(id => id !== key)
+        : [...excludedSources, key];
+      
+      setExcludedSources(newExcluded);
+      localStorage.setItem('excluded_sources', JSON.stringify(newExcluded));
+      toast({ title: "Updated network sources" });
+  };
 
   const sortedAndFiltered = contacts.filter((c) => {
     const isShared = c.user_id && user && c.user_id !== user.id;
@@ -115,6 +163,33 @@ export function NetworkTab() {
             <SelectItem value="school">School</SelectItem>
           </SelectContent>
         </Select>
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="gap-2 bg-white/60 backdrop-blur-md shadow-sm border-white/40">
+              <Settings2 className="h-4 w-4" /> Manage Sources
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-80 bg-white/95 backdrop-blur-xl border-white/60">
+            <h4 className="font-semibold text-sm mb-1 text-slate-800">Network Sources</h4>
+            <p className="text-xs text-muted-foreground mb-4">Toggle whose connections you want to include in NetGraph matchmaking.</p>
+            <div className="space-y-4">
+              {uniqueSources.map(source => (
+                <div key={source.userId || 'me'} className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium leading-none text-slate-800">{source.name}</p>
+                    <p className="text-xs text-muted-foreground">{source.total} contacts ({source.included} included)</p>
+                  </div>
+                  <Switch 
+                     checked={source.included > 0} 
+                     onCheckedChange={(checked) => handleToggleSource(source.userId, checked)}
+                  />
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
         {/* Replaced View Toggle with Network Filter Segmented Control */}
         <div className="flex items-center gap-1 bg-white/40 backdrop-blur-md p-1 rounded-md border border-white/40 shadow-sm ml-auto mr-2">
           <Button
@@ -172,7 +247,11 @@ export function NetworkTab() {
                     </Badge>
                   </div>
                 )}
-                <ContactCard {...c} onChanged={fetchContacts} />
+                <ContactCard 
+                  {...c} 
+                  isExcluded={excludedSources.includes(isShared ? c.user_id! : 'me')}
+                  onChanged={fetchContacts} 
+                />
               </div>
             );
           })}

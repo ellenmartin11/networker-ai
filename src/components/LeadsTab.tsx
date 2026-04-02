@@ -99,13 +99,17 @@ export function LeadsTab() {
   }, [matchPreference]);
 
   useEffect(() => {
-    // Load profile on mount
+    // Load profile once user is available
     const loadProfile = async () => {
+      if (!user) return;
+      
       try {
         const { data, error } = await supabase
           .from("contacts")
           .select("id, name, bio, location, headline, skills")
           .eq("priority", -1)
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
           .limit(1)
           .single();
 
@@ -122,13 +126,21 @@ export function LeadsTab() {
       }
     };
     loadProfile();
-  }, []);
+  }, [user]);
 
   // We no longer need saveProfile here since it moved to AccountTab.
 
   const fetchLeads = async () => {
     setLoading(true);
     try {
+      // Get excluded sources right before calling
+      let excluded_sources: string[] = [];
+      try {
+        excluded_sources = JSON.parse(localStorage.getItem('excluded_sources') || '[]');
+      } catch (e) {
+        // ignore JSON parse error
+      }
+
       const res = await supabase.functions.invoke("ai-matchmaker", {
         body: {
           top_n: topN,
@@ -136,7 +148,8 @@ export function LeadsTab() {
           user_location: userLocation,
           user_affiliations: userAffiliations,
           user_tags: userTags,
-          match_preference: matchPreference
+          match_preference: matchPreference,
+          excluded_sources
         },
       });
       if (res.error) throw res.error;
