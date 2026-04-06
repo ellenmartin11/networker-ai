@@ -258,10 +258,10 @@ export function AccountTab() {
               </div>
               <p className="text-sm text-foreground/80 leading-relaxed">
                 {profile?.subscription_tier === 'pro'
-                  ? "You have 50 AI similarity searches per month, dynamic network graphs, and unlimited AI greetings."
+                  ? "You have unlimited AI similarity searches per month, dynamic network graphs (up to 20 leads), access to NetCluster, and unlimited AI greetings."
                   : profile?.subscription_tier === 'recruiter'
-                    ? "You have unlimited searches, bulk CSV uploads, CSV/CRM exporting, and priority matching capabilities."
-                    : "You are on the basic Explorer plan. You get 3 similarity searches daily and top 5 leads."}
+                    ? "You have unlimited searches, bulk CSV uploads, CSV/CRM exporting, and multi-account support for teams."
+                    : "You are on the basic Explorer plan. You get unlimited similarity searches, and top 5 leads and up to 20 imported contacts."}
               </p>
             </div>
 

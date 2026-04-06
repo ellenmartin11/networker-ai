@@ -67,7 +67,7 @@ export default function Landing() {
 
         {/* Feature Highlights Grid */}
         <div className="mt-32 max-w-7xl mx-auto space-y-24 text-left px-4 lg:px-8">
-          
+
           {/* Feature 1 */}
           <div className="flex flex-col md:flex-row items-center gap-12 group">
             <div className="md:w-5/12 space-y-6">
@@ -81,15 +81,15 @@ export default function Landing() {
             </div>
             <div className="md:w-7/12 w-full">
               <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-50 to-slate-50 relative aspect-video group-hover:shadow-xl group-hover:border-blue-200 transition-all flex items-center justify-center p-4">
-                 <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent z-10 pointer-events-none mix-blend-overlay"></div>
-                 <img src="/demo_gifs/generate_leads.gif" alt="AI Matchmaker Demo" className="max-w-[95%] max-h-[95%] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-200/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent z-10 pointer-events-none mix-blend-overlay"></div>
+                <img src="/demo_gifs/generate_leads.gif" alt="AI Matchmaker Demo" className="max-w-[95%] max-h-[95%] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-200/40" />
               </div>
             </div>
           </div>
 
           {/* Feature 2 (Reversed) */}
           <div className="flex flex-col md:flex-row-reverse items-center gap-12 group">
-             <div className="md:w-5/12 space-y-6">
+            <div className="md:w-5/12 space-y-6">
               <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                 <Sparkles className="w-8 h-8 text-emerald-600" />
               </div>
@@ -100,15 +100,15 @@ export default function Landing() {
             </div>
             <div className="md:w-7/12 w-full">
               <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-50 to-slate-50 relative aspect-video group-hover:shadow-xl group-hover:border-emerald-200 transition-all flex items-center justify-center p-4">
-                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent z-10 pointer-events-none mix-blend-overlay"></div>
-                 <img src="/demo_gifs/browse_connections.gif" alt="Generate Leads Demo" className="max-w-[95%] max-h-[95%] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-200/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent z-10 pointer-events-none mix-blend-overlay"></div>
+                <img src="/demo_gifs/browse_connections.gif" alt="Generate Leads Demo" className="max-w-[95%] max-h-[95%] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-200/40" />
               </div>
             </div>
           </div>
 
           {/* Feature 3 */}
           <div className="flex flex-col md:flex-row items-center gap-12 group">
-             <div className="md:w-5/12 space-y-6">
+            <div className="md:w-5/12 space-y-6">
               <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                 <Fingerprint className="w-8 h-8 text-purple-600" />
               </div>
@@ -119,8 +119,8 @@ export default function Landing() {
             </div>
             <div className="md:w-7/12 w-full">
               <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-50 to-slate-50 relative aspect-video group-hover:shadow-xl group-hover:border-purple-200 transition-all flex items-center justify-center p-4">
-                 <div className="absolute inset-0 bg-gradient-to-t from-purple-500/5 to-transparent z-10 pointer-events-none mix-blend-overlay"></div>
-                 <img src="/demo_gifs/netgraph.gif" alt="Dynamic NetGraph Demo" className="max-w-[95%] max-h-[95%] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-200/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-500/5 to-transparent z-10 pointer-events-none mix-blend-overlay"></div>
+                <img src="/demo_gifs/netgraph.gif" alt="Dynamic NetGraph Demo" className="max-w-[95%] max-h-[95%] w-auto h-auto object-contain rounded-xl shadow-2xl border border-slate-200/40" />
               </div>
             </div>
           </div>
@@ -132,8 +132,8 @@ export default function Landing() {
           <div className="flex flex-col items-center mb-8">
             <h2 className="text-4xl font-display font-medium text-slate-800 mb-4 text-center">How it works</h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto text-center mb-8">Get up and running with networker-ai in just a few easy steps.</p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowHowItWorks(!showHowItWorks)}
               className="gap-2 font-medium bg-white/60 backdrop-blur-md border-primary/20 text-primary hover:bg-primary/10 shadow-sm rounded-full px-6 h-12 transition-all border-2"
             >
@@ -145,78 +145,78 @@ export default function Landing() {
           {showHowItWorks && (
             <div className="grid md:grid-cols-2 gap-12 items-center text-left max-w-6xl mx-auto bg-white/60 backdrop-blur-xl border border-white/50 p-8 md:p-12 rounded-3xl shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
               <div className="space-y-8">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">1</div>
-                <div>
-                  <h4 className="text-lg font-semibold text-slate-800 mb-1">Create an account</h4>
-                  <p className="text-slate-600 leading-relaxed text-sm lg:text-base">Sign up and set up your base profile with your own details so AI can find overlaps.</p>
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">1</div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-1">Create an account</h4>
+                    <p className="text-slate-600 leading-relaxed text-sm lg:text-base">Sign up and set up your base profile with your own details so AI can find overlaps.</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">2</div>
-                <div>
-                  <h4 className="text-lg font-semibold text-slate-800 mb-2">Add your networking contacts</h4>
-                  <div className="text-slate-600 mb-4 space-y-3 leading-relaxed text-sm lg:text-base">
-                    <p>networker-ai performs best when it has a lot of information.</p>
-                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 shadow-sm text-sm">
-                      <p className="font-semibold text-slate-800 mb-2 mt-0">How to export your LinkedIn data:</p>
-                      <ol className="list-decimal pl-4 space-y-1 text-slate-600">
-                        <li>Go to LinkedIn <strong>Settings & Privacy</strong></li>
-                        <li>Click <strong>Data privacy</strong> on the left menu</li>
-                        <li>Select <strong>Get a copy of your data</strong></li>
-                        <li>Check <strong>Connections</strong> and request the archive</li>
-                      </ol>
-                      <p className="text-xs text-amber-600 italic mt-3 font-medium bg-amber-50 inline-block px-2 py-1 rounded">
-                        *Note: LinkedIn can take up to a few days to email you this spreadsheet.
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">2</div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-2">Add your networking contacts</h4>
+                    <div className="text-slate-600 mb-4 space-y-3 leading-relaxed text-sm lg:text-base">
+                      <p>networker-ai performs best when it has a lot of information.</p>
+                      <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 shadow-sm text-sm">
+                        <p className="font-semibold text-slate-800 mb-2 mt-0">How to export your LinkedIn data:</p>
+                        <ol className="list-decimal pl-4 space-y-1 text-slate-600">
+                          <li>Go to LinkedIn <strong>Settings & Privacy</strong></li>
+                          <li>Click <strong>Data privacy</strong> on the left menu</li>
+                          <li>Select <strong>Get a copy of your data</strong></li>
+                          <li>Check <strong>Connections</strong> and request the archive</li>
+                        </ol>
+                        <p className="text-xs text-amber-600 italic mt-3 font-medium bg-amber-50 inline-block px-2 py-1 rounded">
+                          *Note: LinkedIn can take up to a few days to email you this spreadsheet.
+                        </p>
+                      </div>
+                      <p>
+                        <strong>In the meantime:</strong> You don't have to wait! You can easily begin building your graph right now by manually copying and pasting your priority contacts directly into your networker-ai account.
                       </p>
                     </div>
-                    <p>
-                      <strong>In the meantime:</strong> You don't have to wait! You can easily begin building your graph right now by manually copying and pasting your priority contacts directly into your networker-ai account.
-                    </p>
+                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 shadow-inner text-sm text-slate-700">
+                      <strong className="text-slate-800 block mb-1">💡 Pro Tip:</strong>
+                      Grab your contact's headline, bio, and location along with their name. The more textual detail you provide, the better the AI can identify meaningful synergies!
+                    </div>
                   </div>
-                  <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 shadow-inner text-sm text-slate-700">
-                    <strong className="text-slate-800 block mb-1">💡 Pro Tip:</strong>
-                    Grab your contact's headline, bio, and location along with their name. The more textual detail you provide, the better the AI can identify meaningful synergies!
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">3</div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-1">Generate leads & visualize</h4>
+                    <p className="text-slate-600 leading-relaxed text-sm lg:text-base">Generate leads based on shared education, location, skills or interests! View these connections as an interactive network graph to discover hidden links.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">4</div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-slate-800 mb-1">Tailored greetings & interaction</h4>
+                    <p className="text-slate-600 leading-relaxed text-sm lg:text-base">Select your high-priority leads and let our integrated AI draft the perfect, context-aware icebreaker message. Then, take that generated ice-breaker and interact with them on your favorite networking site!</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">3</div>
-                <div>
-                  <h4 className="text-lg font-semibold text-slate-800 mb-1">Generate leads & visualize</h4>
-                  <p className="text-slate-600 leading-relaxed text-sm lg:text-base">Generate leads based on shared education, location, skills or interests! View these connections as an interactive network graph to discover hidden links.</p>
+              <div className="hidden md:flex flex-col gap-6 justify-center px-4 lg:px-12">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-2xl shadow-sm transform transition-transform hover:-translate-y-1">
+                  <div className="flex items-center gap-3 mb-3"><UserPlus className="w-5 h-5 text-blue-500" /><span className="font-semibold text-slate-800">Add Data</span></div>
+                  <div className="h-2 w-full bg-blue-200/70 rounded-full max-w-[80%] mb-2"></div>
+                  <div className="h-2 w-full bg-blue-200/70 rounded-full max-w-[60%]"></div>
                 </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">4</div>
-                <div>
-                  <h4 className="text-lg font-semibold text-slate-800 mb-1">Tailored greetings & interaction</h4>
-                  <p className="text-slate-600 leading-relaxed text-sm lg:text-base">Select your high-priority leads and let our integrated AI draft the perfect, context-aware icebreaker message. Then, take that generated ice-breaker and interact with them on your favorite networking site!</p>
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-6 rounded-2xl shadow-sm transform transition-transform hover:-translate-y-1 ml-10">
+                  <div className="flex items-center gap-3 mb-3"><Network className="w-5 h-5 text-emerald-500" /><span className="font-semibold text-slate-800">Match & Graph</span></div>
+                  <div className="h-2 w-full bg-emerald-200/70 rounded-full max-w-[70%] mb-2"></div>
+                  <div className="h-2 w-full bg-emerald-200/70 rounded-full max-w-[90%]"></div>
+                </div>
+                <div className="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100 p-6 rounded-2xl shadow-sm transform transition-transform hover:-translate-y-1">
+                  <div className="flex items-center gap-3 mb-3"><MessageSquare className="w-5 h-5 text-purple-500" /><span className="font-semibold text-slate-800">Generate Icebreaker</span></div>
+                  <div className="h-2 w-full bg-purple-200/70 rounded-full max-w-[85%] mb-2"></div>
+                  <div className="h-2 w-full bg-purple-200/70 rounded-full max-w-[40%]"></div>
                 </div>
               </div>
             </div>
-
-            <div className="hidden md:flex flex-col gap-6 justify-center px-4 lg:px-12">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-2xl shadow-sm transform transition-transform hover:-translate-y-1">
-                 <div className="flex items-center gap-3 mb-3"><UserPlus className="w-5 h-5 text-blue-500"/><span className="font-semibold text-slate-800">Add Data</span></div>
-                 <div className="h-2 w-full bg-blue-200/70 rounded-full max-w-[80%] mb-2"></div>
-                 <div className="h-2 w-full bg-blue-200/70 rounded-full max-w-[60%]"></div>
-              </div>
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-6 rounded-2xl shadow-sm transform transition-transform hover:-translate-y-1 ml-10">
-                 <div className="flex items-center gap-3 mb-3"><Network className="w-5 h-5 text-emerald-500"/><span className="font-semibold text-slate-800">Match & Graph</span></div>
-                 <div className="h-2 w-full bg-emerald-200/70 rounded-full max-w-[70%] mb-2"></div>
-                 <div className="h-2 w-full bg-emerald-200/70 rounded-full max-w-[90%]"></div>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100 p-6 rounded-2xl shadow-sm transform transition-transform hover:-translate-y-1">
-                 <div className="flex items-center gap-3 mb-3"><MessageSquare className="w-5 h-5 text-purple-500"/><span className="font-semibold text-slate-800">Generate Icebreaker</span></div>
-                 <div className="h-2 w-full bg-purple-200/70 rounded-full max-w-[85%] mb-2"></div>
-                 <div className="h-2 w-full bg-purple-200/70 rounded-full max-w-[40%]"></div>
-              </div>
-            </div>
-          </div>
           )}
         </div>
 
@@ -235,9 +235,10 @@ export default function Landing() {
                 <span className="text-4xl font-bold text-slate-800">Free</span>
               </div>
               <ul className="text-slate-600 space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> 3 Similarity Searches per day</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> Top 5 leads shown</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> Text-based results & graph</li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> Unlimited similarity searches </li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> Top 5 leads shown </li>,
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> 10 AI-generated greeting per month </li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" /> Store/import up to 20 contacts </li>
               </ul>
               <Link to="/login" className="mt-auto">
                 <Button variant="outline" className="w-full font-medium h-12">Get Started</Button>
@@ -254,10 +255,10 @@ export default function Landing() {
               </div>
               <p className="text-sm text-slate-500 mb-6 font-medium">For job seekers & casual networkers.</p>
               <ul className="text-slate-600 space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-primary shrink-0 mt-0.5" /> 50 Similarity Searches per month</li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-primary shrink-0 mt-0.5" /> Unlimited similarity searches </li>
                 <li className="flex items-start gap-3"><Check className="w-5 h-5 text-primary shrink-0 mt-0.5" /> Top 20 leads + Network Graph view</li>
                 <li className="flex items-start gap-3"><Check className="w-5 h-5 text-primary shrink-0 mt-0.5" /> Unlimited AI "Greeting Generator"</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-primary shrink-0 mt-0.5" /> Copy/Paste bio history and csv import</li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-primary shrink-0 mt-0.5" /> NetCluster: Tag and Cluster Contacts</li>
               </ul>
               <Link to="/login" className="mt-auto">
                 <Button className="w-full font-medium h-12 bg-primary hover:bg-primary/90 shadow-md">Upgrade to Pro</Button>
@@ -274,9 +275,9 @@ export default function Landing() {
               <p className="text-sm text-slate-500 mb-6 font-medium">For headhunters & founders.</p>
               <ul className="text-slate-600 space-y-4 mb-8 flex-1">
                 <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> Unlimited Similarity Searches</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> Bulk CSV Upload (Sync LinkedIn)</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> Export leads to CSV/CRM</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> "Priority Match" AI alerts</li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> Unlimited NetGraph Leads </li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> Export leads to CSV/CRM </li>
+                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" /> Multi-account support (for teams)</li>
               </ul>
               <Link to="/login" className="mt-auto">
                 <Button variant="outline" className="w-full font-medium h-12">Upgrade to Recruiter</Button>
