@@ -22,6 +22,12 @@ export function AccountTab() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // Password Update State
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
   // Feedback State
   const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
   const [npsScore, setNpsScore] = useState<number | null>(null);
@@ -66,6 +72,51 @@ export function AccountTab() {
       console.error(e);
       toast({ title: "Failed to sign out", variant: "destructive" });
       setIsLoggingOut(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      toast({ title: "Password must be at least 6 characters", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast({ title: "Password updated successfully!" });
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: e.message || "Failed to update password", variant: "destructive" });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const handleUpgradeToPro = async () => {
+    if (!user) return;
+    setIsUpgrading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ subscription_tier: 'pro' })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      await refreshProfile();
+      toast({ title: "Successfully upgraded to Pro for demo!" });
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: "Failed to upgrade", variant: "destructive" });
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
@@ -232,6 +283,40 @@ export function AccountTab() {
             </div>
           </div>
 
+          <div className="bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm rounded-xl p-6 relative mt-6 hover:shadow-md transition-all">
+            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-slate-400" /> Security Settings
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">New Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Confirm New Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="mt-1.5 bg-white/60 backdrop-blur-md border border-white/40"
+                />
+              </div>
+              <div className="flex justify-end pt-2">
+                <Button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="gap-2">
+                  {isUpdatingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  Update Password
+                </Button>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-red-50/50 backdrop-blur-xl border border-red-100 shadow-sm rounded-xl p-6 relative mt-6 hover:shadow-md transition-all">
             <h3 className="text-lg font-medium mb-1 flex items-center gap-2 text-red-800">
               <AlertOctagon className="h-5 w-5" /> Danger Zone
@@ -283,7 +368,10 @@ export function AccountTab() {
                   <li>• Unlimited AI Greeting Generator</li>
                   <li>• Copy/paste bio history support</li>
                 </ul>
-                <Button className="w-full h-8 text-xs font-medium" variant="outline">Upgrade to Pro</Button>
+                <Button onClick={handleUpgradeToPro} disabled={isUpgrading} className="w-full h-8 text-xs font-medium" variant="outline">
+                  {isUpgrading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                  Upgrade to Pro
+                </Button>
               </div>
             )}
 
